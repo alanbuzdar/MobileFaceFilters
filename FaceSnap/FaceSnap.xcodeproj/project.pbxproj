@@ -15,7 +15,6 @@
 		A373F49B1DD435CD00A49907 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A373F4991DD435CD00A49907 /* LaunchScreen.storyboard */; };
 		A373F4A61DD435CD00A49907 /* FaceSnapTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A373F4A51DD435CD00A49907 /* FaceSnapTests.m */; };
 		A373F4B11DD435CD00A49907 /* FaceSnapUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = A373F4B01DD435CD00A49907 /* FaceSnapUITests.m */; };
-		A373F4BF1DD438D200A49907 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A373F4BE1DD438D200A49907 /* opencv2.framework */; };
 		A373F4CB1DD43D2D00A49907 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A373F4C11DD43D2D00A49907 /* Accelerate.framework */; };
 		A373F4CC1DD43D2D00A49907 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A373F4C21DD43D2D00A49907 /* AssetsLibrary.framework */; };
 		A373F4CD1DD43D2D00A49907 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A373F4C31DD43D2D00A49907 /* AVFoundation.framework */; };
@@ -27,6 +26,7 @@
 		A373F4D31DD43D2D00A49907 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A373F4C91DD43D2D00A49907 /* QuartzCore.framework */; };
 		A373F4D41DD43D2D00A49907 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A373F4CA1DD43D2D00A49907 /* UIKit.framework */; };
 		A38EBC0C1DD6A024005B894F /* haarcascade_frontalface_default.xml in Resources */ = {isa = PBXBuildFile; fileRef = A38EBC0B1DD6A024005B894F /* haarcascade_frontalface_default.xml */; };
+		A38EBC0F1DD6C752005B894F /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A38EBC0E1DD6C752005B894F /* opencv2.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,7 +63,6 @@
 		A373F4AC1DD435CD00A49907 /* FaceSnapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FaceSnapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A373F4B01DD435CD00A49907 /* FaceSnapUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FaceSnapUITests.m; sourceTree = "<group>"; };
 		A373F4B21DD435CE00A49907 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A373F4BE1DD438D200A49907 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 		A373F4C11DD43D2D00A49907 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		A373F4C21DD43D2D00A49907 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		A373F4C31DD43D2D00A49907 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -75,6 +74,7 @@
 		A373F4C91DD43D2D00A49907 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A373F4CA1DD43D2D00A49907 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A38EBC0B1DD6A024005B894F /* haarcascade_frontalface_default.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = haarcascade_frontalface_default.xml; sourceTree = "<group>"; };
+		A38EBC0E1DD6C752005B894F /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,11 +88,11 @@
 				A373F4CE1DD43D2D00A49907 /* CoreGraphics.framework in Frameworks */,
 				A373F4CF1DD43D2D00A49907 /* CoreImage.framework in Frameworks */,
 				A373F4D01DD43D2D00A49907 /* CoreMedia.framework in Frameworks */,
+				A38EBC0F1DD6C752005B894F /* opencv2.framework in Frameworks */,
 				A373F4D11DD43D2D00A49907 /* CoreVideo.framework in Frameworks */,
 				A373F4D21DD43D2D00A49907 /* Foundation.framework in Frameworks */,
 				A373F4D31DD43D2D00A49907 /* QuartzCore.framework in Frameworks */,
 				A373F4D41DD43D2D00A49907 /* UIKit.framework in Frameworks */,
-				A373F4BF1DD438D200A49907 /* opencv2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,7 +190,7 @@
 				A373F4C81DD43D2D00A49907 /* Foundation.framework */,
 				A373F4C91DD43D2D00A49907 /* QuartzCore.framework */,
 				A373F4CA1DD43D2D00A49907 /* UIKit.framework */,
-				A373F4BE1DD438D200A49907 /* opencv2.framework */,
+				A38EBC0E1DD6C752005B894F /* opencv2.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
