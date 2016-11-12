@@ -26,6 +26,7 @@
 		A373F4D21DD43D2D00A49907 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A373F4C81DD43D2D00A49907 /* Foundation.framework */; };
 		A373F4D31DD43D2D00A49907 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A373F4C91DD43D2D00A49907 /* QuartzCore.framework */; };
 		A373F4D41DD43D2D00A49907 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A373F4CA1DD43D2D00A49907 /* UIKit.framework */; };
+		A38EBC0C1DD6A024005B894F /* haarcascade_frontalface_default.xml in Resources */ = {isa = PBXBuildFile; fileRef = A38EBC0B1DD6A024005B894F /* haarcascade_frontalface_default.xml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +74,7 @@
 		A373F4C81DD43D2D00A49907 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A373F4C91DD43D2D00A49907 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A373F4CA1DD43D2D00A49907 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		A38EBC0B1DD6A024005B894F /* haarcascade_frontalface_default.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = haarcascade_frontalface_default.xml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +153,7 @@
 		A373F48B1DD435CD00A49907 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A38EBC0B1DD6A024005B894F /* haarcascade_frontalface_default.xml */,
 				A373F48C1DD435CD00A49907 /* main.m */,
 			);
 			name = "Supporting Files";
@@ -304,6 +307,7 @@
 			files = (
 				A373F49B1DD435CD00A49907 /* LaunchScreen.storyboard in Resources */,
 				A373F4981DD435CD00A49907 /* Assets.xcassets in Resources */,
+				A38EBC0C1DD6A024005B894F /* haarcascade_frontalface_default.xml in Resources */,
 				A373F4961DD435CD00A49907 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

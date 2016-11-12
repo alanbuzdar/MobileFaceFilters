@@ -7,13 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <opencv2/videoio/cap_ios.h>
-using namespace cv;
 
+#import <opencv2/videoio/cap_ios.h>
+#import <opencv2/objdetect/objdetect.hpp>
+#import <opencv2/imgproc/imgproc.hpp>
+#import <vector>
+
+using namespace cv;
 @interface ViewController : UIViewController<CvVideoCameraDelegate>
-    {
-        CvVideoCamera* videoCamera;
-    }
+
+
 @property (nonatomic, retain) CvVideoCamera* videoCamera;
+@property (nonatomic) CascadeClassifier classifier;
+
 @end
 
