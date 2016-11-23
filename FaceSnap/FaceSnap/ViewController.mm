@@ -44,7 +44,7 @@ NSString* const fileName = @"haarcascade_frontalface_default";
 - (void)processImage:(Mat&)image;
 {
     int scale = 8;
-    Mat grey, blur, output, displayImage, thresholded, largestContour;
+    Mat grey, blur, output, displayImage, thresholded, largestContour, thresh;
     std::vector<std::vector<cv::Point> > contours;
     std::vector<Vec4i> hierarchy;
     RNG rng(12345);
@@ -57,7 +57,7 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     
     //threshold binary
     cv::threshold(blur, thresholded, 130, 255, THRESH_BINARY_INV);
-    
+    thresh = thresholded.clone();
     
     //find contours and hulls of each contour
     cv::findContours( thresholded, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
@@ -84,7 +84,7 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     drawContours( image, hull, index, Scalar(255,0,0, 1), 1, 8, std::vector<Vec4i>(), 0, cv::Point() );
     drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
 
-    //later could somehow use this
+//    later could somehow use this
 //    std::vector<cv::Vec4i> defects;
 //    convexityDefects(contours[index], hull[index], defects);
 //    long numDefects = defects.size();
@@ -100,9 +100,10 @@ NSString* const fileName = @"haarcascade_frontalface_default";
 //        furthest = contours.at(index).at( defects.at(i)[2]);
 //        depth = defects.at(i)[3];
 //    }
-    cv::cvtColor(image, image, CV_BGR2RGB);
+    
     switch(self.display) {
         case 0:
+            cv::cvtColor(image, image, CV_BGR2RGB);
             break;
         case 1:
             image = grey.clone();
@@ -111,7 +112,7 @@ NSString* const fileName = @"haarcascade_frontalface_default";
             image = blur.clone();
             break;
         default:
-            image = thresholded.clone();
+            image = thresh.clone();
     }
     
 }
