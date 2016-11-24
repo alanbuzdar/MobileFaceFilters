@@ -16,8 +16,12 @@ using namespace cv;
 @interface ViewController : UIViewController<CvVideoCameraDelegate>
 
 
+@property (weak, nonatomic) IBOutlet UIButton *captureHandImageButton;
 @property (nonatomic, retain) CvVideoCamera* videoCamera;
 @property (nonatomic) CascadeClassifier classifier;
 @property int display;
+@property cv::Rect handRect;
+@property cv::Mat hand1, hand2;
+@property bool pressed;
 @end
 
