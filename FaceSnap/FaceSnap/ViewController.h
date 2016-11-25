@@ -20,8 +20,9 @@ using namespace cv;
 @property (nonatomic, retain) CvVideoCamera* videoCamera;
 @property (nonatomic) CascadeClassifier classifier;
 @property int display;
-@property cv::Rect handRect;
-@property cv::Mat hand1, hand2;
-@property bool pressed;
+@property cv::Rect handRect1, handRect2, handRect3, handRect4, handRect5;
+@property cv::Mat hand1, hand2, hand3, hand4, hand5;
+@property cv::Scalar mean1, mean2, mean3, mean4, mean5;
+@property bool captureSkinColor, showRects;
 @end
 

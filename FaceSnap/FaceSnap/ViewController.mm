@@ -13,10 +13,10 @@
 
 @implementation ViewController
 NSString* const fileName = @"haarcascade_frontalface_default";
-    
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    cv::Rect rec;
+    
     // Do any additional setup after loading the view, typically from a nib.
     NSString* filePath = [[NSBundle mainBundle] pathForResource:fileName ofType:@"xml"];
     _classifier.load([filePath UTF8String]);
@@ -31,91 +31,122 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.videoCamera.grayscaleMode = NO;
     self.videoCamera.rotateVideo = YES;
     self.display = 0;
-    self.pressed = false;
+    self.showRects = true;
+    self.captureSkinColor = false;
     
-    rec.x = imageView.bounds.size.width / 2 - 20;
-    rec.y = imageView.bounds.size.height / 2 - 20;
-    rec.width = 250;
-    rec.height = 600;
+    cv::Rect rec1, rec2, rec3, rec4, rec5;
+    rec1.x = 230;
+    rec1.y = 500;
+    rec1.width = 50;
+    rec1.height = 50;
     
-    self.handRect = rec;
+    rec2.x = 360;
+    rec2.y = 500;
+    rec2.width = 50;
+    rec2.height = 50;
+    
+    rec3.x = 250;
+    rec3.y = 700;
+    rec3.width = 50;
+    rec3.height = 50;
+    
+    rec4.x = 340;
+    rec4.y = 700;
+    rec4.width = 50;
+    rec4.height = 50;
+    
+    rec5.x = 295;
+    rec5.y = 600;
+    rec5.width = 50;
+    rec5.height = 50;
+    
+    self.handRect1 = rec1;
+    self.handRect2 = rec2;
+    self.handRect3 = rec3;
+    self.handRect4 = rec4;
+    self.handRect5 = rec5;
     [self.videoCamera start];
 }
 
 - (IBAction)captureHandImageButtonPressed:(id)sender {
-    self.pressed = true;
+    self.captureSkinColor = true;
 }
 
+- (IBAction)showRectanglesButtonPressed:(id)sender {
+    self.showRects = !self.showRects;
+}
 
 - (IBAction)changeViewButtonPressed:(id)sender {
-    self.display = (self.display + 1) % 3;
+    self.display = (self.display + 1) % 6;
 }
 
 #pragma mark - Protocol CvVideoCameraDelegate
 
 #ifdef __cplusplus
+
+cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
+    return cv::Scalar(m.val[0] + r, m.val[1] + g, m.val[2] + b);
+}
+
+- (void)captureHandColor :(Mat) image {
+    self.hand1 = image(self.handRect1).clone();
+    self.hand2 = image(self.handRect2).clone();
+    self.hand3 = image(self.handRect3).clone();
+    self.hand4 = image(self.handRect4).clone();
+    self.hand5 = image(self.handRect5).clone();
+    
+    self.mean1 = cv::mean(self.hand1);
+    self.mean2 = cv::mean(self.hand2);
+    self.mean3 = cv::mean(self.hand3);
+    self.mean4 = cv::mean(self.hand4);
+    self.mean5 = cv::mean(self.hand5);
+    
+    self.captureSkinColor = false;
+    self.showRects = false;
+}
+
 - (void)processImage:(Mat&)image;
 {
-    if(self.hand1.empty()) {
-        cv::rectangle(image, self.handRect, Scalar(255,0,0,1));
-        if(self.pressed) {
-            printf("hand 1 ");
-            self.hand1 = image(self.handRect).clone();
-            self.pressed = false;
-        }
-    } else if(self.hand2.empty()) {
-        cv::rectangle(image, self.handRect, Scalar(255,0,0,1));
-        if(self.pressed) {
-            printf("hand 2 ");
-            self.hand2 = image(self.handRect).clone();
-            self.pressed = false;
-            self.captureHandImageButton.alpha = 0.0;
-        }
-        
-        
-    } else {
-        Mat grey, blur, output, displayImage, thresholded, largestContour, thresh, temp;
-        std::vector<std::vector<cv::Point> > contours;
+    if(self.showRects) {
+        cv::rectangle(image, self.handRect1, Scalar(255,0,0,1));
+        cv::rectangle(image, self.handRect2, Scalar(255,0,0,1));
+        cv::rectangle(image, self.handRect3, Scalar(255,0,0,1));
+        cv::rectangle(image, self.handRect4, Scalar(255,0,0,1));
+        cv::rectangle(image, self.handRect5, Scalar(255,0,0,1));
+    }
+    
+    if(self.captureSkinColor) {
+        [self captureHandColor :image];
+    }
+    if(!self.hand1.empty()) {
+        Mat grey, HSV, output, displayImage, thresholded, largestContour, thresh, temp;
+        Mat thresh1, thresh2, thresh3, thresh4, thresh5;
+        Mat sumThresh;
+        double area, max = 0;
+        int index = 0, r = 50, g = 50, b = 50;
+        cv::Rect rect;
+        std::vector<std::vector<cv::Point>> contours;
         std::vector<Vec4i> hierarchy;
         
-        //convert image to grayscale
-//        cvtColor(image, grey, CV_BGR2GRAY);
+        cv::cvtColor(image, HSV, CV_RGB2HSV);
+        cv::inRange(HSV, getOffsetColor(self.mean1, -r, -g, -b), getOffsetColor(self.mean1, r, g, b), thresh1);
+        cv::inRange(HSV, getOffsetColor(self.mean2, -r, -g, -b), getOffsetColor(self.mean2, r, g, b), thresh2);
+        cv::inRange(HSV, getOffsetColor(self.mean3, -r, -g, -b), getOffsetColor(self.mean3, r, g, b), thresh3);
+        cv::inRange(HSV, getOffsetColor(self.mean4, -r, -g, -b), getOffsetColor(self.mean4, r, g, b), thresh4);
+        cv::inRange(HSV, getOffsetColor(self.mean5, -r, -g, -b), getOffsetColor(self.mean5, r, g, b), thresh5);
         
-        //blur image
-//        cv::GaussianBlur(image, blur, cv::Size(35,35), 0);
-        cv::cvtColor(image, blur, CV_RGB2HSV);
-
-//        
-//        thresh = image.clone();
-//        thresh.setTo(cv::Scalar(0,0,0));
-        //threshold based on skin
-        cv::Scalar mean = cv::mean(self.hand1);
-        cv::Scalar darker = Scalar(mean.val[0] + 60, mean.val[1] + 60, mean.val[2] + 60);
-        cv::Scalar lighter = Scalar(mean.val[0] - 60, mean.val[1] - 60, mean.val[2] - 60);
+        cv::add(thresh1, thresh2, sumThresh);
+        cv::add(sumThresh, thresh3, sumThresh);
+        cv::add(sumThresh, thresh4, sumThresh);
+        cv::add(sumThresh, thresh5, sumThresh);
         
-        cv::inRange(blur, lighter, darker, thresholded);
-        cv::erode(thresholded, thresholded, Mat());
-        cv::dilate(thresholded, thresholded, Mat());
-        thresh = thresholded.clone();
         
-        //find contours and hulls of each contour
-        cv::findContours( thresholded, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
+        cv::medianBlur(sumThresh, sumThresh, 5);
+        cv::erode(sumThresh, sumThresh, Mat());
+        output = sumThresh.clone();
         
-        double area, max = 0, threshold = 10000;
-        int index = 0;
-        cv::Rect rect;
-        
-        //remove small contours
-        for( int i = 0; i < contours.size(); i++ )
-        {
-            area=contourArea(contours[i],false);
-            if(area<threshold){
-                cv::drawContours(thresholded, contours, i, cv::Scalar(0), CV_FILLED, 8);
-            }
-        }
-        
-        //then go again
-        cv::findContours( thresholded, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
+//        find contours and hulls of each contour
+        cv::findContours( output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
 
         std::vector<std::vector<cv::Point>> hull( contours.size() );
         for( int i = 0; i < contours.size(); i++ ) {
@@ -135,6 +166,8 @@ NSString* const fileName = @"haarcascade_frontalface_default";
         
         drawContours( image, hull, index, Scalar(255,0,0, 1), 1, 8, std::vector<Vec4i>(), 0, cv::Point() );
         drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
+//
+        
         //    later could somehow use this
         //    std::vector<cv::Vec4i> defects;
         //    convexityDefects(contours[index], hull[index], defects);
@@ -157,10 +190,22 @@ NSString* const fileName = @"haarcascade_frontalface_default";
                 cv::cvtColor(image, image, CV_BGR2RGB);
                 break;
             case 1:
-                image = blur.clone();
+                image = sumThresh.clone();
+                break;
+            case 2:
+                image = thresh1.clone();
+                break;
+            case 3:
+                image = thresh2.clone();
+                break;
+            case 4:
+                image = thresh3.clone();
+                break;
+            case 5:
+                image = thresh4.clone();
                 break;
             default:
-                image = thresh.clone();
+                image = thresh5.clone();
         }
     }
 }
