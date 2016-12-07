@@ -101,10 +101,12 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     [EAGLContext setCurrentContext: self.context];
     self.glkView.context = self.context;
     self.glkView.enableSetNeedsDisplay = true;
-//    self.glkView.drawableColorFormat = kCIFormatRGBA8;
-//    glkView.drawableDepthFormat = GLKViewDrawableDepthFormat.formatNone
-//    glkView.drawableStencilFormat = GLKViewDrawableStencilFormat.formatNone
-//    glkView.drawableMultisample = GLKViewDrawableMultisample.multisampleNone
+    self.glkView.drawableColorFormat = GLKViewDrawableColorFormatRGBA8888;
+    self.glkView.drawableDepthFormat = GLKViewDrawableDepthFormatNone;
+    self.glkView.drawableStencilFormat = GLKViewDrawableStencilFormatNone;
+    self.glkView.drawableMultisample = GLKViewDrawableMultisampleNone;
+    [self.glkView setOpaque:NO];
+    
     [self.glkView bindDrawable];
 }
 
@@ -138,9 +140,12 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 
 -(void)drawOpenGLObjects
 {
-    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.0, 0.0, 1.0, 0.2);
+    glEnable( GL_BLEND );
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glClearColor(1.0, 0.0, 1.0, 0.3);
+    glDisable( GL_BLEND );
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     
