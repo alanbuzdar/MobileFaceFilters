@@ -150,6 +150,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 
 -(void)drawObject
 {
+    glEnable(GL_LIGHTING);
     glColor4f(1, 1, 1, 1);
     GLfloat vertices[720];
     GLfloat upnormals[360*3];
@@ -172,18 +173,6 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     }
     glColor4f(1, 1, 0, 1);
     
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, vertices);
-    glNormalPointer(GL_FLOAT, 0, downnormals);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 360);
-    glTranslatef(0, 0, -length);
-    glNormalPointer(GL_FLOAT, 0, upnormals);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 360);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    
-    glTranslatef(0, 0, length);
     GLfloat sides[361 * 2 * 3];
     GLfloat normals[361 * 2 * 3];
     for (int i = 0; i <= 360; i++) {
@@ -203,12 +192,35 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         normals[i*6+4] = (GLfloat)sin(DEGREES_TO_RADIANS(i));
         normals[i*6+5] = 0;
     }
+
     
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, sides);
     glNormalPointer(GL_FLOAT, 0, normals);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 361*2);
+    
+    
+    
+    glTranslatef(0, 0, -length);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, vertices);
+    glNormalPointer(GL_FLOAT, 0, downnormals);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 360);
+    glTranslatef(0, 0, -length);
+    glNormalPointer(GL_FLOAT, 0, upnormals);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 360);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    
+    
+    
+    
+    
+    
+    
+    
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
 }
@@ -284,13 +296,16 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     glLoadMatrixf(&RotMat.at<float>(0,0));
     float z = [self getZCoordinate];
     glTranslatef(normalizedX * z, normalizedY * z, z);
-    GLfloat lightPos[] = {0, 0, -4, 1};
+    GLfloat lightPos[] = {0, 1.0, -3, 1};
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+    
+    glRotatef(-30, 1, 0, 0);
+    
     
     
     [self drawAxes:1.0];
     [self drawObject];
-    
+    glDisable(GL_LIGHTING);
     
     [self.context presentRenderbuffer:GL_RENDERBUFFER];
     glPopMatrix();
