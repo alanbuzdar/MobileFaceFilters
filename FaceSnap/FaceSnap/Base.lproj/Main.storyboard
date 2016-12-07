@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2659" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -24,14 +24,38 @@
                             <imageView userInteractionEnabled="NO" tag="2" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="IoF-xP-Prs">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
+                            <glkView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" enableSetNeedsDisplay="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yss-eY-8Eq">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <glkView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" enableSetNeedsDisplay="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oy9-nU-ZQc">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </glkView>
+                                </subviews>
+                            </glkView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y50-xQ-Lkn">
                                 <rect key="frame" x="121" y="637" width="133" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="133" id="RBu-k6-vuP"/>
                                 </constraints>
-                                <state key="normal" title="Change"/>
+                                <state key="normal" title="Change View"/>
                                 <connections>
                                     <action selector="changeViewButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="IOe-WS-b2r"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KAJ-k8-8xj">
+                                <rect key="frame" x="116" y="607" width="142" height="30"/>
+                                <state key="normal" title="Capture Hand Image"/>
+                                <connections>
+                                    <action selector="captureHandImageButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="npj-5q-gtn"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7GN-4f-Etd">
+                                <rect key="frame" x="128" y="577" width="118" height="30"/>
+                                <state key="normal" title="Show Rectangles"/>
+                                <connections>
+                                    <action selector="showRectanglesButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xeM-4N-0eo"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -42,11 +66,20 @@
                             <constraint firstItem="IoF-xP-Prs" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="AtQ-bq-RkU"/>
                             <constraint firstItem="IoF-xP-Prs" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="GSh-Pw-PMz"/>
                             <constraint firstItem="Y50-xQ-Lkn" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="QXY-1X-BVa"/>
+                            <constraint firstItem="Y50-xQ-Lkn" firstAttribute="top" secondItem="KAJ-k8-8xj" secondAttribute="bottom" id="RfX-hF-exv"/>
+                            <constraint firstItem="7GN-4f-Etd" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="TaI-ML-aa7"/>
+                            <constraint firstItem="KAJ-k8-8xj" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="TrL-8M-YC1"/>
+                            <constraint firstItem="KAJ-k8-8xj" firstAttribute="top" secondItem="7GN-4f-Etd" secondAttribute="bottom" id="aSQ-Lp-xtP"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="Y50-xQ-Lkn" secondAttribute="bottom" id="cOJ-n1-wfH"/>
                             <constraint firstAttribute="trailing" secondItem="IoF-xP-Prs" secondAttribute="trailing" id="kpz-8p-UP4"/>
                             <constraint firstItem="IoF-xP-Prs" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="qO2-pH-l46"/>
+                            <constraint firstItem="7GN-4f-Etd" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="uZP-bG-Nk5"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="captureHandImageButton" destination="KAJ-k8-8xj" id="R1C-SE-Bor"/>
+                        <outlet property="glkView" destination="oy9-nU-ZQc" id="HPd-vI-AaI"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
