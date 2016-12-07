@@ -147,9 +147,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     self.showRects = false;
 }
 
-
--(void)drawObject
-{
+-(void)drawCylinder {
     glEnable(GL_LIGHTING);
     glColor4f(1, 1, 1, 1);
     GLfloat vertices[720];
@@ -192,7 +190,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         normals[i*6+4] = (GLfloat)sin(DEGREES_TO_RADIANS(i));
         normals[i*6+5] = 0;
     }
-
+    
     
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
@@ -201,28 +199,24 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 361*2);
     
     
-    
-    glTranslatef(0, 0, -length);
+//    glTranslatef(0, 0, -length);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glVertexPointer(2, GL_FLOAT, 0, vertices);
     glNormalPointer(GL_FLOAT, 0, downnormals);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 360);
+    
+    
     glTranslatef(0, 0, -length);
     glNormalPointer(GL_FLOAT, 0, upnormals);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 360);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
-    
-    
-    
-    
-    
-    
-    
-    
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+-(void)drawObject
+{
+    [self drawCylinder];
 }
 
 - (void) drawAxes:(float) length
@@ -445,20 +439,24 @@ float dist(cv::Point p1, cv::Point p2){
         drawContours( image, hull, index, Scalar(255,0,0, 1), 1, 8, std::vector<Vec4i>(), 0, cv::Point() );
         drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
         
-        
-        cv::Rect handBoundingRect = boundingRect(contours[index]);
-        cv::Rect newHandBoundingRect;
-        int rectW = handBoundingRect.width;
-        int rectH = handBoundingRect.height;
-        float goldenRatio = 1.3333;// h/w
-        int maxHeight = rectW*goldenRatio;
-        if(rectH > maxHeight){
-            newHandBoundingRect = cv::Rect(handBoundingRect.tl().x, handBoundingRect.tl().y, rectW, maxHeight);
-        }else{
-            newHandBoundingRect = handBoundingRect;
+        if(contours.size() > index) {
+            cv::Rect handBoundingRect = boundingRect(contours[index]);
+            cv::Rect newHandBoundingRect;
+            int rectW = handBoundingRect.width;
+            int rectH = handBoundingRect.height;
+            float goldenRatio = 1.3333;// h/w
+            int maxHeight = rectW*goldenRatio;
+            if(rectH > maxHeight){
+                newHandBoundingRect = cv::Rect(handBoundingRect.tl().x, handBoundingRect.tl().y, rectW, maxHeight);
+            }else{
+                newHandBoundingRect = handBoundingRect;
+            }
+            
+            cv::rectangle(image, newHandBoundingRect, Scalar(0,255,0, 1));
         }
+
         
-        cv::rectangle(image, newHandBoundingRect, Scalar(0,255,0, 1));
+        
         
         
         [self.glkView display];
