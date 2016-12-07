@@ -383,6 +383,23 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         
         drawContours( image, hull, index, Scalar(255,0,0, 1), 1, 8, std::vector<Vec4i>(), 0, cv::Point() );
         drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
+        
+        
+        cv::Rect handBoundingRect = boundingRect(contours[index]);
+        cv::Rect newHandBoundingRect;
+        int rectW = handBoundingRect.width;
+        int rectH = handBoundingRect.height;
+        float goldenRatio = 1.3333;// h/w
+        int maxHeight = rectW*goldenRatio;
+        if(rectH > maxHeight){
+            newHandBoundingRect = cv::Rect(handBoundingRect.tl().x, handBoundingRect.tl().y, rectW, maxHeight);
+        }else{
+            newHandBoundingRect = handBoundingRect;
+        }
+        
+        cv::rectangle(image, newHandBoundingRect, Scalar(0,255,0, 1));
+        
+        
         [self.glkView display];
 //
 
