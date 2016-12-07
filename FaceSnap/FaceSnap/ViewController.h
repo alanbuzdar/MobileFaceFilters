@@ -31,5 +31,7 @@ using namespace cv;
 @property (weak, nonatomic) IBOutlet GLKView *glkView;
 @property GLKBaseEffect* effect;
 @property GLuint viewRenderBuffer;
+@property cv::Point centroid;
+@property NSInteger frame;
 @end
 
