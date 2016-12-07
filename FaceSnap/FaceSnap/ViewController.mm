@@ -111,6 +111,30 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     self.showRects = false;
 }
 
+- (void)updateHandColor: (Mat) image {
+    if(_centroid.x < 50 || _centroid.x > image.cols-50 || _centroid.y < 50 || _centroid.y > image.rows-50)
+        return;
+    cv::cvtColor(image, image, CV_RGB2HSV);
+    self.handRect1 = cv::Rect(_centroid.x-50, _centroid.y-50, 10, 10);
+    self.handRect2 = cv::Rect(_centroid.x+40, _centroid.y-50, 10, 10);
+    self.handRect3 = cv::Rect(_centroid.x, _centroid.y, 10, 10);
+    self.handRect4 = cv::Rect(_centroid.x+40, _centroid.y+40, 10, 10);
+    self.handRect5 = cv::Rect(_centroid.x-50, _centroid.y+40, 10, 10);
+
+    self.hand1 = image(self.handRect1).clone();
+    self.hand2 = image(self.handRect2).clone();
+    self.hand3 = image(self.handRect3).clone();
+    self.hand4 = image(self.handRect4).clone();
+    self.hand5 = image(self.handRect5).clone();
+    
+    self.mean1 = cv::mean(self.hand1);
+    self.mean2 = cv::mean(self.hand2);
+    self.mean3 = cv::mean(self.hand3);
+    self.mean4 = cv::mean(self.hand4);
+    self.mean5 = cv::mean(self.hand5);
+    
+}
+
 - (void)processImage:(Mat&)image;
 {
     if(self.showRects) {
@@ -133,6 +157,11 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         cv::Rect rect;
         std::vector<std::vector<cv::Point>> contours;
         std::vector<Vec4i> hierarchy;
+        _frame++;
+        if(_frame % 5 == 0 ){
+            _frame = 1;
+            [self updateHandColor:image];
+        }
         
         cv::cvtColor(image, HSV, CV_RGB2HSV);
         cv::inRange(HSV, getOffsetColor(self.mean1, -r, -g, -b), getOffsetColor(self.mean1, r, g, b), thresh1);
@@ -164,7 +193,6 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         for( int i = 0; i < contours.size(); i++ ) {
             convexHull( Mat(contours[i]), hull[i], false );
         }
-        
         //grab the largest contour and use that index for hull/contour displaying
         for( int i = 0; i < contours.size(); i++ )
         {
@@ -175,10 +203,15 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
             }
         }
         
+        if(hull.size() > index){
+            Moments m = moments(hull[index]);
+            _centroid = cv::Point(m.m10/m.m00, m.m01/m.m00);
+            std::cout << _centroid << std::endl;
+        }
         
         drawContours( image, hull, index, Scalar(255,0,0, 1), 1, 8, std::vector<Vec4i>(), 0, cv::Point() );
         drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
-//
+        //
         
         //    later could somehow use this
         //    std::vector<cv::Vec4i> defects;

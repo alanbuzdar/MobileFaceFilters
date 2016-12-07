@@ -24,5 +24,7 @@ using namespace cv;
 @property cv::Mat hand1, hand2, hand3, hand4, hand5;
 @property cv::Scalar mean1, mean2, mean3, mean4, mean5;
 @property bool captureSkinColor, showRects;
+@property cv::Point centroid;
+@property NSInteger frame;
 @end
 
