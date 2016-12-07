@@ -75,6 +75,8 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.handRect3 = rec3;
     self.handRect4 = rec4;
     self.handRect5 = rec5;
+    _rectsize = 20;
+    
     [self.videoCamera start];
     
 }
@@ -177,11 +179,11 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     if(_centroid.x < 50 || _centroid.x > image.cols-50 || _centroid.y < 50 || _centroid.y > image.rows-50)
         return;
     cv::cvtColor(image, image, CV_RGB2HSV);
-    self.handRect1 = cv::Rect(_centroid.x-50, _centroid.y-50, 10, 10);
-    self.handRect2 = cv::Rect(_centroid.x+40, _centroid.y-50, 10, 10);
-    self.handRect3 = cv::Rect(_centroid.x, _centroid.y, 10, 10);
-    self.handRect4 = cv::Rect(_centroid.x+40, _centroid.y+40, 10, 10);
-    self.handRect5 = cv::Rect(_centroid.x-50, _centroid.y+40, 10, 10);
+    self.handRect1 = cv::Rect(_centroid.x-50, _centroid.y-50, _rectsize, _rectsize);
+    self.handRect2 = cv::Rect(_centroid.x+50-_rectsize, _centroid.y-50, _rectsize, _rectsize);
+    self.handRect3 = cv::Rect(_centroid.x, _centroid.y, _rectsize, _rectsize);
+    self.handRect4 = cv::Rect(_centroid.x+50-_rectsize, _centroid.y+50-_rectsize, _rectsize, _rectsize);
+    self.handRect5 = cv::Rect(_centroid.x-50, _centroid.y+50-_rectsize, _rectsize, _rectsize);
 
     self.hand1 = image(self.handRect1).clone();
     self.hand2 = image(self.handRect2).clone();
@@ -208,7 +210,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         Mat thresh1, thresh2, thresh3, thresh4, thresh5;
         Mat sumThresh;
         double area, max = 0;
-        int index = 0, r = 16, g = 25, b = 24;
+        int index = 0, h = 5, s = 25, v = 50;
         cv::Rect rect;
         std::vector<std::vector<cv::Point>> contours;
         std::vector<Vec4i> hierarchy;
@@ -217,19 +219,13 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
             _frame = 1;
             [self updateHandColor:image];
         }
-        
+        std::cout << self.mean1 << std::endl;
         cv::cvtColor(image, HSV, CV_RGB2HSV);
-        cv::inRange(HSV, getOffsetColor(self.mean1, -r, -g, -b), getOffsetColor(self.mean1, r, g, b), thresh1);
-        cv::inRange(HSV, getOffsetColor(self.mean2, -r, -g, -b), getOffsetColor(self.mean2, r, g, b), thresh2);
-        cv::inRange(HSV, getOffsetColor(self.mean3, -r, -g, -b), getOffsetColor(self.mean3, r, g, b), thresh3);
-        cv::inRange(HSV, getOffsetColor(self.mean4, -r, -g, -b), getOffsetColor(self.mean4, r, g, b), thresh4);
-        cv::inRange(HSV, getOffsetColor(self.mean5, -r, -g, -b), getOffsetColor(self.mean5, r, g, b), thresh5);
-        
-        std::cout<<"1:"<<self.mean1<<std::endl;
-        std::cout<<"2:"<<self.mean2<<std::endl;
-        std::cout<<"3:"<<self.mean3<<std::endl;
-        std::cout<<"4:"<<self.mean4<<std::endl;
-        std::cout<<"5:"<<self.mean5<<std::endl;
+        cv::inRange(HSV, getOffsetColor(self.mean1, -h, -s, -v), getOffsetColor(self.mean1, h, s, v), thresh1);
+        cv::inRange(HSV, getOffsetColor(self.mean2, -h, -s, -v), getOffsetColor(self.mean2, h, s, v), thresh2);
+        cv::inRange(HSV, getOffsetColor(self.mean3, -h, -s, -v), getOffsetColor(self.mean3, h, s, v), thresh3);
+        cv::inRange(HSV, getOffsetColor(self.mean4, -h, -s, -v), getOffsetColor(self.mean4, h, s, v), thresh4);
+        cv::inRange(HSV, getOffsetColor(self.mean5, -h, -s, -v), getOffsetColor(self.mean5, h, s, v), thresh5);
         
         cv::add(thresh1, thresh2, sumThresh);
         cv::add(sumThresh, thresh3, sumThresh);

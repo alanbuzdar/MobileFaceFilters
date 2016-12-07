@@ -33,5 +33,6 @@ using namespace cv;
 @property GLuint viewRenderBuffer;
 @property cv::Point centroid;
 @property NSInteger frame;
+@property int rectsize;
 @end
 
