@@ -293,14 +293,14 @@ float dist(cv::Point p1, cv::Point p2){
                 float d12 = dist(point1, point2);
                 float d23 = dist(point2, point3);
                 std::cout << angle << std::endl;
-                if(angle < 90 && d12 < 1280/3 && d23 < 1280/3){
+                if(angle < 90 && d12 < 1280/3 && d23 < 1280/3 && d12 > 128 && d23 > 128){
                     //cv::line(image, contours[index][current[0]], contours[index][current[2]], Scalar(0,0,255, 1), 10);
                     //cv::line(image, contours[index][current[2]], contours[index][current[1]], Scalar(0,0,255, 1), 10);
                     fingers.push_back(current);
                 }
 
             }
-        
+            
             for(int j=0; j<fingers.size(); j++){
                 cv::circle(image, contours[index][fingers[j][0]], 50, Scalar(0,0,255, 1));
             }
