@@ -200,14 +200,6 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 - (void)processImage:(Mat&)image;
 
 {
-    if(self.showRects) {
-        cv::rectangle(image, self.handRect1, Scalar(255,0,0,1));
-        cv::rectangle(image, self.handRect2, Scalar(255,0,0,1));
-        cv::rectangle(image, self.handRect3, Scalar(255,0,0,1));
-        cv::rectangle(image, self.handRect4, Scalar(255,0,0,1));
-        cv::rectangle(image, self.handRect5, Scalar(255,0,0,1));
-    }
-    
     if(self.captureSkinColor) {
         [self captureHandColor :image];
     }
@@ -319,6 +311,13 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
             default:
                 image = thresh5.clone();
         }
+    }
+    if(self.showRects) {
+        cv::rectangle(image, self.handRect1, Scalar(0,0,255,1));
+        cv::rectangle(image, self.handRect2, Scalar(0,0,255,1));
+        cv::rectangle(image, self.handRect3, Scalar(0,0,255,1));
+        cv::rectangle(image, self.handRect4, Scalar(0,0,255,1));
+        cv::rectangle(image, self.handRect5, Scalar(0,0,255,1));
     }
 }
 #endif
