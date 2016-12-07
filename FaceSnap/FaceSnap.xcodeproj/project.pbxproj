@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5BBC3B961DF7B46300A10D76 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBC3B951DF7B46300A10D76 /* GLKit.framework */; };
 		A373F48D1DD435CD00A49907 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A373F48C1DD435CD00A49907 /* main.m */; };
 		A373F4901DD435CD00A49907 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A373F48F1DD435CD00A49907 /* AppDelegate.mm */; };
 		A373F4931DD435CD00A49907 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A373F4921DD435CD00A49907 /* ViewController.mm */; };
@@ -47,6 +48,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5BBC3B951DF7B46300A10D76 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		A373F4881DD435CD00A49907 /* FaceSnap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FaceSnap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A373F48C1DD435CD00A49907 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A373F48E1DD435CD00A49907 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5BBC3B961DF7B46300A10D76 /* GLKit.framework in Frameworks */,
 				A38EBC0F1DD6C752005B894F /* opencv2.framework in Frameworks */,
 				A373F4CB1DD43D2D00A49907 /* Accelerate.framework in Frameworks */,
 				A373F4CC1DD43D2D00A49907 /* AssetsLibrary.framework in Frameworks */,
@@ -180,6 +183,7 @@
 		A373F4C01DD438E400A49907 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5BBC3B951DF7B46300A10D76 /* GLKit.framework */,
 				A373F4C11DD43D2D00A49907 /* Accelerate.framework */,
 				A373F4C21DD43D2D00A49907 /* AssetsLibrary.framework */,
 				A373F4C31DD43D2D00A49907 /* AVFoundation.framework */,

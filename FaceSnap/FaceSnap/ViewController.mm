@@ -38,6 +38,11 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.display = 0;
     self.showRects = true;
     self.captureSkinColor = false;
+    self.glkView.delegate = self;
+    self.effect = [GLKBaseEffect new];
+    self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
+    
+    [self initializeOpenGL];
     
     cv::Rect rec1, rec2, rec3, rec4, rec5;
     rec1.x = 230;
@@ -71,6 +76,7 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.handRect4 = rec4;
     self.handRect5 = rec5;
     [self.videoCamera start];
+    
 }
 
 - (IBAction)captureHandImageButtonPressed:(id)sender {
@@ -85,12 +91,39 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.display = (self.display + 1) % 6;
 }
 
+- (void)glkView:(GLKView *)view
+     drawInRect:(CGRect)rect {
+    std::cout << "\n\n\nhere\n\n\n" << std::endl;
+    [self drawOpenGLObjects];
+}
+
 #pragma mark - Protocol CvVideoCameraDelegate
 
 #ifdef __cplusplus
+- (void)initializeOpenGL {
+    [self createFramebuffer];
+
+    [EAGLContext setCurrentContext: self.context];
+    self.glkView.context = self.context;
+    self.glkView.enableSetNeedsDisplay = true;
+    self.glkView.drawableColorFormat = GLKViewDrawableColorFormatRGBA8888;
+    self.glkView.drawableDepthFormat = GLKViewDrawableDepthFormatNone;
+    self.glkView.drawableStencilFormat = GLKViewDrawableStencilFormatNone;
+    self.glkView.drawableMultisample = GLKViewDrawableMultisampleNone;
+    [self.glkView setOpaque:NO];
+    
+    [self.glkView bindDrawable];
+}
 
 cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     return cv::Scalar(m.val[0] + r, m.val[1] + g, m.val[2] + b);
+}
+
+- (void) createFramebuffer {
+    GLuint viewFrameBuffer;
+    glGenFramebuffers(1, &viewFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, viewFrameBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, self.viewRenderBuffer);
 }
 
 - (void)captureHandColor :(Mat) image {
@@ -110,6 +143,35 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     self.captureSkinColor = false;
     self.showRects = false;
 }
+
+
+-(void)drawOpenGLObjects
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable( GL_BLEND );
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+//    glClearColor(1.0, 0.0, 1.0, 0.3);
+    glDisable( GL_BLEND );
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    
+
+    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    
+    glLoadIdentity();
+    glPushMatrix();
+    
+    GLfloat lightPos[] = {2.5, 3.5, -2, 1};
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+    
+    [self.context presentRenderbuffer:GL_RENDERBUFFER];
+    glPopMatrix();
+}
+
 
 - (void)updateHandColor: (Mat) image {
     if(_centroid.x < 50 || _centroid.x > image.cols-50 || _centroid.y < 50 || _centroid.y > image.rows-50)
@@ -136,6 +198,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 }
 
 - (void)processImage:(Mat&)image;
+
 {
     if(self.showRects) {
         cv::rectangle(image, self.handRect1, Scalar(255,0,0,1));
@@ -190,6 +253,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         cv::findContours( output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
 
         std::vector<std::vector<cv::Point>> hull( contours.size() );
+        
         for( int i = 0; i < contours.size(); i++ ) {
             convexHull( Mat(contours[i]), hull[i], false );
         }
@@ -211,6 +275,9 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         
         drawContours( image, hull, index, Scalar(255,0,0, 1), 1, 8, std::vector<Vec4i>(), 0, cv::Point() );
         drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
+        [self.glkView display];
+//
+
         //
         
         //    later could somehow use this

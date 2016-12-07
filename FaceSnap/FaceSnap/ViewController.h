@@ -11,9 +11,12 @@
 #import <opencv2/objdetect/objdetect.hpp>
 #import <opencv2/imgproc/imgproc.hpp>
 #import <vector>
+#import <GLKit/GLKit.h>
+#import <OpenGLES/ES1/gl.h>
+#include <iostream>
 
 using namespace cv;
-@interface ViewController : UIViewController<CvVideoCameraDelegate>
+@interface ViewController : UIViewController<CvVideoCameraDelegate, GLKViewDelegate>
 
 
 @property (weak, nonatomic) IBOutlet UIButton *captureHandImageButton;
@@ -24,6 +27,10 @@ using namespace cv;
 @property cv::Mat hand1, hand2, hand3, hand4, hand5;
 @property cv::Scalar mean1, mean2, mean3, mean4, mean5;
 @property bool captureSkinColor, showRects;
+@property EAGLContext* context;
+@property (weak, nonatomic) IBOutlet GLKView *glkView;
+@property GLKBaseEffect* effect;
+@property GLuint viewRenderBuffer;
 @property cv::Point centroid;
 @property NSInteger frame;
 @end
