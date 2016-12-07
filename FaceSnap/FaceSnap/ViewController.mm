@@ -41,7 +41,7 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.glkView.delegate = self;
     self.effect = [GLKBaseEffect new];
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
-    
+    self.frame = 0;
     [self initializeOpenGL];
     
     cv::Rect rec1, rec2, rec3, rec4, rec5;
