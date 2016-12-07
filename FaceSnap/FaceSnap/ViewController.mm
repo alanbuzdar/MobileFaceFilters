@@ -336,6 +336,24 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     
 }
 
+float vertexAngle(cv::Point p1, cv::Point p2, cv::Point p3){
+    // return angle at p2
+    float angle;
+    float d12, d23, d13;
+    d12 = dist(p1, p2);
+    d23 = dist(p2, p3);
+    d13 = dist(p1, p3);
+    
+    float ratio = ( (d23*d23)+(d12*d12)-(d13*d13) )/( 2*d12*d23 );
+    angle = acos(ratio);
+    angle = angle*180/M_PI;
+    return angle;
+}
+
+float dist(cv::Point p1, cv::Point p2){
+  return sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y));
+}
+
 - (void)processImage:(Mat&)image;
 
 {
@@ -377,10 +395,13 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         cv::findContours( output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
 
         std::vector<std::vector<cv::Point>> hull( contours.size() );
-        
+        std::vector<std::vector<int>> hullI(contours.size());
+
         for( int i = 0; i < contours.size(); i++ ) {
             convexHull( Mat(contours[i]), hull[i], false );
+            convexHull( Mat(contours[i]), hullI[i], false );
         }
+        
         //grab the largest contour and use that index for hull/contour displaying
         for( int i = 0; i < contours.size(); i++ )
         {
@@ -391,11 +412,36 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
             }
         }
         
-        if(hull.size() > index){
+        std::vector<Vec4i> defects;
+        std::vector<Vec4i> fingers;
+        if(hull.size() > index && hull[index].size() > 2 && contours[index].size() > 2){
             Moments m = moments(hull[index]);
             _centroid = cv::Point(m.m10/m.m00, m.m01/m.m00);
-         }
-        
+            convexityDefects(contours[index], hullI[index], defects);
+            std::cout << defects.size() << std::endl;
+            for(int i=0; i<defects.size()-1; i++){
+                Vec4i current = defects[i];
+                cv::Point point1 = contours[index][current[0]];
+                cv::Point point2 = contours[index][current[2]];
+                cv::Point point3 = contours[index][current[1]];
+                
+                float angle = vertexAngle( point1,  point2,  point3);
+                float d12 = dist(point1, point2);
+                float d23 = dist(point2, point3);
+                std::cout << angle << std::endl;
+                if(angle < 90 && d12 < 1280/3 && d23 < 1280/3 && d12 > 128 && d23 > 128){
+                    //cv::line(image, contours[index][current[0]], contours[index][current[2]], Scalar(0,0,255, 1), 10);
+                    //cv::line(image, contours[index][current[2]], contours[index][current[1]], Scalar(0,0,255, 1), 10);
+                    fingers.push_back(current);
+                }
+
+            }
+            
+            for(int j=0; j<fingers.size(); j++){
+                cv::circle(image, contours[index][fingers[j][0]], 50, Scalar(0,0,255, 1));
+            }
+        }
+
         drawContours( image, hull, index, Scalar(255,0,0, 1), 1, 8, std::vector<Vec4i>(), 0, cv::Point() );
         drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
         
@@ -416,15 +462,16 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         
         
         [self.glkView display];
-//
+
+        //
 
         //
         
-        //    later could somehow use this
-        //    std::vector<cv::Vec4i> defects;
-        //    convexityDefects(contours[index], hull[index], defects);
-        //    long numDefects = defects.size();
-        //
+//            later could somehow use this
+//            std::vector<cv::Vec4i> defects;
+//            convexityDefects(contours[index], hull[index], defects);
+//            long numDefects = defects.size();
+//        
         //    //each defect is (start_index, end_index, farthest_pt_index, fixpt_depth);
         //    cv::Point start, end, furthest;
         //    double depth;
