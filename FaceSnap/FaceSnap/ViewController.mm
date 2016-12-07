@@ -7,6 +7,11 @@
 //
 
 #import "ViewController.h"
+#import <GLKit/GLKit.h>
+#import <OpenGLES/ES1/gl.h>
+#include<cstdlib>
+#include<cstdio>
+#include<iostream>
 
 @interface ViewController ()
 @end
@@ -89,6 +94,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 }
 
 - (void)captureHandColor :(Mat) image {
+    cv::cvtColor(image, image, CV_RGB2HSV);
     self.hand1 = image(self.handRect1).clone();
     self.hand2 = image(self.handRect2).clone();
     self.hand3 = image(self.handRect3).clone();
@@ -123,7 +129,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         Mat thresh1, thresh2, thresh3, thresh4, thresh5;
         Mat sumThresh;
         double area, max = 0;
-        int index = 0, r = 50, g = 50, b = 50;
+        int index = 0, r = 16, g = 25, b = 24;
         cv::Rect rect;
         std::vector<std::vector<cv::Point>> contours;
         std::vector<Vec4i> hierarchy;
@@ -134,6 +140,12 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         cv::inRange(HSV, getOffsetColor(self.mean3, -r, -g, -b), getOffsetColor(self.mean3, r, g, b), thresh3);
         cv::inRange(HSV, getOffsetColor(self.mean4, -r, -g, -b), getOffsetColor(self.mean4, r, g, b), thresh4);
         cv::inRange(HSV, getOffsetColor(self.mean5, -r, -g, -b), getOffsetColor(self.mean5, r, g, b), thresh5);
+        
+        std::cout<<"1:"<<self.mean1<<std::endl;
+        std::cout<<"2:"<<self.mean2<<std::endl;
+        std::cout<<"3:"<<self.mean3<<std::endl;
+        std::cout<<"4:"<<self.mean4<<std::endl;
+        std::cout<<"5:"<<self.mean5<<std::endl;
         
         cv::add(thresh1, thresh2, sumThresh);
         cv::add(sumThresh, thresh3, sumThresh);
