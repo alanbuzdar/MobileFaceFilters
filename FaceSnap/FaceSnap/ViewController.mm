@@ -33,6 +33,10 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.display = 0;
     self.showRects = true;
     self.captureSkinColor = false;
+    self.effect = [GLKBaseEffect new];
+    self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
+    
+    [self initializeOpenGL];
     
     cv::Rect rec1, rec2, rec3, rec4, rec5;
     rec1.x = 230;
@@ -80,9 +84,24 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.display = (self.display + 1) % 6;
 }
 
+-(void)glkView :(GLKView*) view :(CGRect) rect {
+    
+}
+
 #pragma mark - Protocol CvVideoCameraDelegate
 
 #ifdef __cplusplus
+- (void)initializeOpenGL {
+    glBindRenderbuffer(GL_RENDERBUFFER, self.viewRenderBuffer);
+    [EAGLContext setCurrentContext: self.context];
+    self.glkView.context = self.context;
+    self.glkView.enableSetNeedsDisplay = true;
+//    self.glkView.drawableColorFormat = kCIFormatRGBA8;
+//    glkView.drawableDepthFormat = GLKViewDrawableDepthFormat.formatNone
+//    glkView.drawableStencilFormat = GLKViewDrawableStencilFormat.formatNone
+//    glkView.drawableMultisample = GLKViewDrawableMultisample.multisampleNone
+    [self.glkView bindDrawable];
+}
 
 cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     return cv::Scalar(m.val[0] + r, m.val[1] + g, m.val[2] + b);
@@ -105,7 +124,31 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     self.showRects = false;
 }
 
-- (void)processImage:(Mat&)image;
+-(void)drawOpenGLObjects
+{
+    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.0, 0.0, 1.0, 1.0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    
+
+    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    
+    glLoadIdentity();
+    glPushMatrix();
+    
+    GLfloat lightPos[] = {2.5, 3.5, -2, 1};
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+    
+    [self.context presentRenderbuffer:GL_RENDERBUFFER];
+    glPopMatrix();
+}
+
+- (void)processImage:(Mat&)image
 {
     if(self.showRects) {
         cv::rectangle(image, self.handRect1, Scalar(255,0,0,1));
@@ -149,6 +192,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         cv::findContours( output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
 
         std::vector<std::vector<cv::Point>> hull( contours.size() );
+        
         for( int i = 0; i < contours.size(); i++ ) {
             convexHull( Mat(contours[i]), hull[i], false );
         }
@@ -166,6 +210,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         
         drawContours( image, hull, index, Scalar(255,0,0, 1), 1, 8, std::vector<Vec4i>(), 0, cv::Point() );
         drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
+        [self drawOpenGLObjects];
 //
         
         //    later could somehow use this
