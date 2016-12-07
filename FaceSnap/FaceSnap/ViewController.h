@@ -13,6 +13,7 @@
 #import <vector>
 #import <GLKit/GLKit.h>
 #import <OpenGLES/ES1/gl.h>
+#include <iostream>
 
 using namespace cv;
 @interface ViewController : UIViewController<CvVideoCameraDelegate, GLKViewDelegate>

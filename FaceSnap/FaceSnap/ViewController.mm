@@ -33,6 +33,7 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.display = 0;
     self.showRects = true;
     self.captureSkinColor = false;
+    self.glkView.delegate = self;
     self.effect = [GLKBaseEffect new];
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
     
@@ -70,6 +71,7 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.handRect4 = rec4;
     self.handRect5 = rec5;
     [self.videoCamera start];
+    
 }
 
 - (IBAction)captureHandImageButtonPressed:(id)sender {
@@ -84,15 +86,18 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.display = (self.display + 1) % 6;
 }
 
--(void)glkView :(GLKView*) view :(CGRect) rect {
-    
+- (void)glkView:(GLKView *)view
+     drawInRect:(CGRect)rect {
+    std::cout << "\n\n\nhere\n\n\n" << std::endl;
+    [self drawOpenGLObjects];
 }
 
 #pragma mark - Protocol CvVideoCameraDelegate
 
 #ifdef __cplusplus
 - (void)initializeOpenGL {
-    glBindRenderbuffer(GL_RENDERBUFFER, self.viewRenderBuffer);
+    [self createFramebuffer];
+
     [EAGLContext setCurrentContext: self.context];
     self.glkView.context = self.context;
     self.glkView.enableSetNeedsDisplay = true;
@@ -105,6 +110,13 @@ NSString* const fileName = @"haarcascade_frontalface_default";
 
 cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     return cv::Scalar(m.val[0] + r, m.val[1] + g, m.val[2] + b);
+}
+
+- (void) createFramebuffer {
+    GLuint viewFrameBuffer;
+    glGenFramebuffers(1, &viewFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, viewFrameBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, self.viewRenderBuffer);
 }
 
 - (void)captureHandColor :(Mat) image {
@@ -128,7 +140,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 {
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.0, 0.0, 1.0, 1.0);
+    glClearColor(0.0, 0.0, 1.0, 0.2);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     
@@ -210,7 +222,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         
         drawContours( image, hull, index, Scalar(255,0,0, 1), 1, 8, std::vector<Vec4i>(), 0, cv::Point() );
         drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
-        [self drawOpenGLObjects];
+        [self.glkView display];
 //
         
         //    later could somehow use this
