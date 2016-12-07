@@ -12,6 +12,8 @@
 #include<cstdlib>
 #include<cstdio>
 #include<iostream>
+#define PI 3.14159265358979323846
+#define DEGREES_TO_RADIANS(x) (PI * x / 180.0)
 
 @interface ViewController ()
 @end
@@ -95,7 +97,6 @@ NSString* const fileName = @"haarcascade_frontalface_default";
 
 - (void)glkView:(GLKView *)view
      drawInRect:(CGRect)rect {
-    std::cout << "\n\n\nhere\n\n\n" << std::endl;
     [self drawOpenGLObjects];
 }
 
@@ -146,29 +147,171 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     self.showRects = false;
 }
 
+-(void)drawObject
+{
+    GLfloat vertices[720][720];
+    float x_amount = 0.25;
+    float y_amount = x_amount * self.view.bounds.size.width / self.view.bounds.size.height;
+    for (int j = 0; j < 1; j ++) {
+        for (int i = 0; i < 720; i += 2) {
+            // x value
+            vertices[j][i] = (cos(DEGREES_TO_RADIANS(i/2)) * x_amount); // x=r *cos(theta)
+            // y value
+            vertices[j][i+1] = (sin(DEGREES_TO_RADIANS(i/2)) * y_amount);// y= r*sin(theta)
+        }
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(2, GL_FLOAT, 0, vertices[j]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 360);
+    }
+    
+    
+    //    glColor4f(1, 1, 1, 1);
+//    GLfloat vertices[720];
+//    GLfloat upnormals[360*3];
+//    GLfloat downnormals[360*3];
+
+//    
+//    std::cout << y_amount << std::endl;
+//    for (int i = 0; i < 720; i += 2) {
+//        vertices[i]   = (GLfloat)(cos(DEGREES_TO_RADIANS(-i/2)) * x_amount);
+//        vertices[i+1] = (GLfloat)(sin(DEGREES_TO_RADIANS(-i/2)) * y_amount);
+//        
+//        upnormals[i/2*3] = 0;
+//        upnormals[i/2*3+1] = 0;
+//        upnormals[i/2*3+2] = -1;
+//        
+//        downnormals[i/2*3] = 0;
+//        downnormals[i/2*3+1] = 0;
+//        downnormals[i/2*3+2] = 1;
+//    }
+//    glColor4f(1, 1, 0, 1);
+//    
+//    glPushMatrix();
+//    glEnableClientState(GL_VERTEX_ARRAY);
+//    glEnableClientState(GL_NORMAL_ARRAY);
+//    glVertexPointer(2, GL_FLOAT, 0, vertices);
+//    glNormalPointer(GL_FLOAT, 0, downnormals);
+//    glTranslatef(0, 0, -0.5);
+//    glDrawArrays(GL_TRIANGLE_FAN, 0, 360);
+//    glPopMatrix();
+//    glPushMatrix();
+//    glTranslatef(0, 0, -0.5);
+//    glNormalPointer(GL_FLOAT, 0, upnormals);
+//    glDrawArrays(GL_TRIANGLE_FAN, 0, 360);
+//    glDisableClientState(GL_NORMAL_ARRAY);
+//    glDisableClientState(GL_VERTEX_ARRAY);
+//    glPopMatrix();
+//    
+//    GLfloat sides[361 * 2 * 3];
+//    GLfloat normals[361 * 2 * 3];
+//    for (int i = 0; i <= 360; i++) {
+//        sides[i*6]   = (GLfloat)(cos(DEGREES_TO_RADIANS(i)) * x_amount);
+//        sides[i*6+1] = (GLfloat)(sin(DEGREES_TO_RADIANS(i)) * y_amount);
+//        sides[i*6+2] = 0;
+//        
+//        sides[i*6+3]   = (GLfloat)(cos(DEGREES_TO_RADIANS(i)) * x_amount);
+//        sides[i*6+4] = (GLfloat)(sin(DEGREES_TO_RADIANS(i)) * y_amount);
+//        sides[i*6+5] = -0.5;
+//        
+//        normals[i*6] = (GLfloat)cos(DEGREES_TO_RADIANS(i));
+//        normals[i*6+1] = (GLfloat)sin(DEGREES_TO_RADIANS(i));
+//        normals[i*6+2] = 0;
+//        
+//        normals[i*6+3] = (GLfloat)cos(DEGREES_TO_RADIANS(i));
+//        normals[i*6+4] = (GLfloat)sin(DEGREES_TO_RADIANS(i));
+//        normals[i*6+5] = 0;
+//    }
+//    
+//    glEnableClientState(GL_VERTEX_ARRAY);
+//    glEnableClientState(GL_NORMAL_ARRAY);
+//    glVertexPointer(3, GL_FLOAT, 0, sides);
+//    glNormalPointer(GL_FLOAT, 0, normals);
+//    glDrawArrays(GL_TRIANGLE_STRIP, 0, 361*2);
+//    glDisableClientState(GL_NORMAL_ARRAY);
+//    glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+- (void) drawAxes:(float) length
+{
+    GLfloat vertice[] = {0,0,0,length,0,0};
+    glDisable(GL_LIGHTING);
+    //x
+    glColor4f(1, 0, 0, 1);
+    glEnableClientState(GL_VERTEX_ARRAY) ;
+    glVertexPointer(3, GL_FLOAT, 0, vertice);
+    glLineWidth(5);
+    glDrawArrays(GL_LINES, 0, 3);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    
+    //y
+    glColor4f(0, 1, 0, 1);
+    vertice[3] = 0; vertice[4] = length;
+    glEnableClientState(GL_VERTEX_ARRAY) ;
+    glVertexPointer(3, GL_FLOAT, 0, vertice);
+    glLineWidth(5);
+    glDrawArrays(GL_LINES, 0, 3);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    
+    //z
+    glColor4f(0, 0, 1, 1);
+    vertice[4] = 0; vertice[5] = length;
+    glEnableClientState(GL_VERTEX_ARRAY) ;
+    glVertexPointer(3, GL_FLOAT, 0, vertice);
+    glLineWidth(5);
+    glDrawArrays(GL_LINES, 0, 3);
+    glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+-(float)getZCoordinate
+{
+    float z = 1.5;//max(1.0, 1.0);
+    
+    
+    
+    return z;
+}
 
 -(void)drawOpenGLObjects
 {
+    GLfloat near = 1.0f, far = 100.0f;
+    float normalizedX = _centroid.x / self.view.bounds.size.width - 1;
+    float normalizedY = _centroid.y / self.view.bounds.size.height - 1;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable( GL_BLEND );
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-//    glClearColor(1.0, 0.0, 1.0, 0.3);
+    
+    //    glClearColor(1.0, 0.0, 1.0, 0.3);
     glDisable( GL_BLEND );
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    
+    glFrustumf(-1, 1, -1, 1, near, far);
 
+    
     glMatrixMode(GL_MODELVIEW);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_COLOR_MATERIAL);
-    
     glLoadIdentity();
     glPushMatrix();
     
-    GLfloat lightPos[] = {2.5, 3.5, -2, 1};
+    cv::Mat RotMat = cv::Mat::zeros(4, 4, CV_32F);
+    RotMat.at<float>(0,0) = 1.0f;
+    RotMat.at<float>(1,1) = -1.0f;
+    RotMat.at<float>(2,2) = -1.0f;
+    RotMat.at<float>(3,3) = 1.0f;
+    
+    
+    glLoadMatrixf(&RotMat.at<float>(0,0));
+    
+    glTranslatef(normalizedX, normalizedY, [self getZCoordinate]);
+    GLfloat lightPos[] = {0, 0, -4, 1};
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+//    glRotatef(10, 1, 0, 0);
+    
+    
+    
+    [self drawObject];
+    [self drawAxes:0.5];
     
     [self.context presentRenderbuffer:GL_RENDERBUFFER];
     glPopMatrix();
@@ -210,7 +353,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         Mat thresh1, thresh2, thresh3, thresh4, thresh5;
         Mat sumThresh;
         double area, max = 0;
-        int index = 0, h = 5, s = 25, v = 50;
+        int index = 0, h = 10, s = 50, v = 50;
         cv::Rect rect;
         std::vector<std::vector<cv::Point>> contours;
         std::vector<Vec4i> hierarchy;
@@ -219,7 +362,6 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
             _frame = 1;
             [self updateHandColor:image];
         }
-        std::cout << self.mean1 << std::endl;
         cv::cvtColor(image, HSV, CV_RGB2HSV);
         cv::inRange(HSV, getOffsetColor(self.mean1, -h, -s, -v), getOffsetColor(self.mean1, h, s, v), thresh1);
         cv::inRange(HSV, getOffsetColor(self.mean2, -h, -s, -v), getOffsetColor(self.mean2, h, s, v), thresh2);
@@ -258,8 +400,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         if(hull.size() > index){
             Moments m = moments(hull[index]);
             _centroid = cv::Point(m.m10/m.m00, m.m01/m.m00);
-            std::cout << _centroid << std::endl;
-        }
+         }
         
         drawContours( image, hull, index, Scalar(255,0,0, 1), 1, 8, std::vector<Vec4i>(), 0, cv::Point() );
         drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
