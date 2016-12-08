@@ -46,6 +46,9 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.colorCount = 0;
     self.prevTimeStamp = 0;
     self.objectType = 0;
+    self.shouldSpin = 0;
+    self.spin = 0;
+
     [self initializeOpenGL];
     
     cv::Rect rec1, rec2, rec3, rec4, rec5;
@@ -150,27 +153,29 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     GLfloat vertices[720];
     GLfloat upnormals[360*3];
     GLfloat downnormals[360*3];
-    float x_amount = 0.70;
-    float y_amount = x_amount * self.view.bounds.size.width / self.view.bounds.size.height;
-    float length = 0.25;
+    float x_amount = 0.8;
+    float y_amount = self.view.bounds.size.width / self.view.bounds.size.height;
+    float length = 0.5;
 
     for (int i = 0; i < 720; i += 2) {
+        
         vertices[i]   = (GLfloat)(cos(DEGREES_TO_RADIANS(-i/2)) * x_amount);
         vertices[i+1] = (GLfloat)(sin(DEGREES_TO_RADIANS(-i/2)) * y_amount);
+
         
         upnormals[i/2*3] = 0;
         upnormals[i/2*3+1] = 0;
-        upnormals[i/2*3+2] = -1;
+        upnormals[i/2*3+2] = -1;//-cos(DEGREES_TO_RADIANS(_spin));
         
         downnormals[i/2*3] = 0;
         downnormals[i/2*3+1] = 0;
-        downnormals[i/2*3+2] = 1;
+        downnormals[i/2*3+2] = 1;//cos(DEGREES_TO_RADIANS(_spin));
     }
-//    glColor4f(1, 1, 0, 1);
     
     GLfloat sides[361 * 2 * 3];
     GLfloat normals[361 * 2 * 3];
     for (int i = 0; i <= 360; i++) {
+        
         sides[i*6]   = (GLfloat)(cos(DEGREES_TO_RADIANS(i)) * x_amount);
         sides[i*6+1] = (GLfloat)(sin(DEGREES_TO_RADIANS(i)) * y_amount);
         sides[i*6+2] = 0;
@@ -187,16 +192,14 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         normals[i*6+4] = (GLfloat)sin(DEGREES_TO_RADIANS(i));
         normals[i*6+5] = 0;
     }
-    
-    
+
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, sides);
     glNormalPointer(GL_FLOAT, 0, normals);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 361*2);
+
     
-    
-//    glTranslatef(0, 0, -length);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glVertexPointer(2, GL_FLOAT, 0, vertices);
@@ -225,6 +228,11 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
             glColor4f(0, 1, 1, 1);
             break;
     }
+    if(self.shouldSpin) {
+       glRotatef(self.spin, 0, 0, 1);
+    }
+    
+
     switch(self.objectType) {
         case 0:
             [self drawCylinder];
@@ -282,6 +290,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     float normalizedY = _centroid.y / self.view.bounds.size.height - 1;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable( GL_BLEND );
+    glEnable( GL_DEPTH_TEST );
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     //    glClearColor(1.0, 0.0, 1.0, 0.3);
@@ -304,14 +313,13 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     RotMat.at<float>(2,2) = -1.0f;
     RotMat.at<float>(3,3) = 1.0f;
     
-    
     glLoadMatrixf(&RotMat.at<float>(0,0));
     float z = [self getZCoordinate];
     glTranslatef(normalizedX * z, normalizedY * z, z);
+    
+    glRotatef(-40, 1, 0, 0);
     GLfloat lightPos[] = {0, 1.0, -3, 1};
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
-    
-    glRotatef(-30, 1, 0, 0);
     
 //    [self drawAxes:1.0];
     [self drawObject];
@@ -364,9 +372,8 @@ float dist(cv::Point p1, cv::Point p2){
   return sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y));
 }
 
-- (void)processImage:(Mat&)image;
-
-{
+- (void)processImage:(Mat&)image {
+    _spin = (_spin + 20) % 360;
     if(self.captureSkinColor) {
         [self captureHandColor :image];
     }
@@ -512,7 +519,8 @@ float dist(cv::Point p1, cv::Point p2){
             self.colorCount = (self.colorCount + 1) % 3;
             self.prevTimeStamp = clock();
         } else if (fingers.size() <= 1 && (clock() - self.prevTimeStamp > 250*1e-3*CLOCKS_PER_SEC)) {
-            self.objectType = (self.objectType + 1) % 2;
+//            self.objectType = (self.objectType + 1) % 2;
+            self.shouldSpin = (self.shouldSpin + 1) % 2;
             self.prevTimeStamp = clock();
         }
         else {

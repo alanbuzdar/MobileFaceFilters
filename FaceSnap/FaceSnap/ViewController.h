@@ -37,6 +37,8 @@ using namespace cv;
 @property int handRectWidth;
 @property int colorCount;
 @property int objectType;
+@property int spin;
+@property int shouldSpin;
 @property clock_t prevTimeStamp;
 @end
 
