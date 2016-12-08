@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2659" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="15G1108" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -24,13 +24,6 @@
                             <imageView userInteractionEnabled="NO" tag="2" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="IoF-xP-Prs">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Score: 0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IEe-fY-BGE">
-                                <rect key="frame" x="80" y="323" width="214" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <glkView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" enableSetNeedsDisplay="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yss-eY-8Eq">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -58,12 +51,19 @@
                                     <action selector="captureHandImageButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="npj-5q-gtn"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Score: " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ClR-nJ-2WE">
+                                <rect key="frame" x="127" y="317" width="120" height="33"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="IoF-xP-Prs" secondAttribute="bottom" id="6tI-ho-Jul"/>
                             <constraint firstItem="IoF-xP-Prs" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="8bJ-Og-oL2"/>
                             <constraint firstItem="IoF-xP-Prs" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="AtQ-bq-RkU"/>
+                            <constraint firstItem="ClR-nJ-2WE" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="Eqf-np-YEh"/>
                             <constraint firstItem="IoF-xP-Prs" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="GSh-Pw-PMz"/>
                             <constraint firstItem="Y50-xQ-Lkn" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="QXY-1X-BVa"/>
                             <constraint firstItem="Y50-xQ-Lkn" firstAttribute="top" secondItem="KAJ-k8-8xj" secondAttribute="bottom" id="RfX-hF-exv"/>
@@ -71,12 +71,13 @@
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="Y50-xQ-Lkn" secondAttribute="bottom" id="cOJ-n1-wfH"/>
                             <constraint firstAttribute="trailing" secondItem="IoF-xP-Prs" secondAttribute="trailing" id="kpz-8p-UP4"/>
                             <constraint firstItem="IoF-xP-Prs" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="qO2-pH-l46"/>
+                            <constraint firstItem="ClR-nJ-2WE" firstAttribute="leading" secondItem="IoF-xP-Prs" secondAttribute="leading" id="tvg-ZK-LE5"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="captureHandImageButton" destination="KAJ-k8-8xj" id="R1C-SE-Bor"/>
                         <outlet property="glkView" destination="oy9-nU-ZQc" id="HPd-vI-AaI"/>
-                        <outlet property="scoreLabel" destination="IEe-fY-BGE" id="Ix6-yV-XW2"/>
+                        <outlet property="scoreLabel" destination="ClR-nJ-2WE" id="WFe-gq-5q0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
