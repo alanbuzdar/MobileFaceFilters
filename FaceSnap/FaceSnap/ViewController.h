@@ -34,5 +34,6 @@ using namespace cv;
 @property cv::Point centroid;
 @property NSInteger frame;
 @property int rectsize;
+@property int handRectWidth;
 @end
 

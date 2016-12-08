@@ -252,9 +252,10 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 
 -(float)getZCoordinate
 {
-    float z = 2.0;//max(1.0, 1.0);
-    
-    return z;
+    float handPercent = self.handRectWidth / self.view.bounds.size.height;
+    handPercent = 1.0 - handPercent;
+    float scale = handPercent * 3.0;
+    return 2.0 + scale;
 }
 
 -(void)drawOpenGLObjects
@@ -421,10 +422,10 @@ float dist(cv::Point p1, cv::Point p2){
                 newHandBoundingRect = handBoundingRect;
             }
             
-            
+            self.handRectWidth = newHandBoundingRect.width;
+
             _centroid = cv::Point(newHandBoundingRect.x+newHandBoundingRect.width/2, newHandBoundingRect.y+newHandBoundingRect.height/2);
             convexityDefects(contours[index], hullI[index], defects);
-            std::cout << defects.size() << std::endl;
             for(int i=0; i<defects.size()-1; i++){
                 Vec4i current = defects[i];
                 cv::Point point1 = contours[index][current[0]];
@@ -454,28 +455,7 @@ float dist(cv::Point p1, cv::Point p2){
         else {
             glClear(GL_COLOR_BUFFER_BIT);
             [self.context presentRenderbuffer:GL_RENDERBUFFER];
-           // glClearColor(0, 0, 0);
         }
-        //
-
-        //
-        
-//            later could somehow use this
-//            std::vector<cv::Vec4i> defects;
-//            convexityDefects(contours[index], hull[index], defects);
-//            long numDefects = defects.size();
-//        
-        //    //each defect is (start_index, end_index, farthest_pt_index, fixpt_depth);
-        //    cv::Point start, end, furthest;
-        //    double depth;
-        //
-        //    for(int i = 0; i < numDefects; i++) {
-        //        start = contours.at(index).at( defects.at(i)[0]);
-        //        cv::circle(image, start, 5, Scalar(0,255,0,1));
-        //        end = contours.at(index).at( defects.at(i)[1]);
-        //        furthest = contours.at(index).at( defects.at(i)[2]);
-        //        depth = defects.at(i)[3];
-        //    }
         
         switch(self.display) {
             case 0:
