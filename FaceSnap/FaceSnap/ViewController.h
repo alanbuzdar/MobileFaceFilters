@@ -39,6 +39,7 @@ using namespace cv;
 @property int objectType;
 @property int spin;
 @property int shouldSpin;
+@property std::vector<float> shootingY;
 @property clock_t prevTimeStamp;
 @end
 

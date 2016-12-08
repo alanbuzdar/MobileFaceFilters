@@ -49,6 +49,7 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.shouldSpin = 0;
     self.spin = 0;
 
+    
     [self initializeOpenGL];
     
     cv::Rect rec1, rec2, rec3, rec4, rec5;
@@ -84,8 +85,19 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.handRect5 = rec5;
     _rectsize = 20;
     
+    UITapGestureRecognizer *tap =
+    [[UITapGestureRecognizer alloc] initWithTarget:self
+                                            action:@selector(handleTap:)];
+    [self.view addGestureRecognizer:tap];
+    
     [self.videoCamera start];
     
+}
+
+- (void)handleTap:(UITapGestureRecognizer *)recognizer {
+    std::cout << "pushing back 0" << std::endl;
+    _shootingY.push_back(0.0f);
+    std::cout << "size is now" << self.shootingY.size() << std::endl;
 }
 
 - (IBAction)captureHandImageButtonPressed:(id)sender {
@@ -212,6 +224,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     glDrawArrays(GL_TRIANGLE_FAN, 0, 360);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
+    glTranslatef(0, 0, length);
 }
 
 -(void)drawObject
@@ -236,6 +249,22 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     switch(self.objectType) {
         case 0:
             [self drawCylinder];
+            if(_shootingY.size() != 0) {
+                if(self.shouldSpin) {
+                    glRotatef(-self.spin, 0, 0, 1);
+                }
+                
+                for(int i = 0; i < _shootingY.size(); i++) {
+                    _shootingY[i] -= 1;
+                    glTranslatef(0, _shootingY[i], 0);
+                    [self drawCylinder];
+                    glTranslatef(0, -_shootingY[i], 0);
+                    if(_shootingY[i] <= -50) {
+                        _shootingY.erase(_shootingY.begin());
+                    }
+                }
+                
+            }
         break;
         case 1:
             break;
@@ -525,6 +554,7 @@ float dist(cv::Point p1, cv::Point p2){
         }
         else {
             glClear(GL_COLOR_BUFFER_BIT);
+            _shootingY.clear();
             [self.context presentRenderbuffer:GL_RENDERBUFFER];
         }
         
