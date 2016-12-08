@@ -252,9 +252,10 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 
 -(float)getZCoordinate
 {
-    float handPercent = self.handRectWidth / self.view.bounds.size.height;
+    float handPercent = 0.5 * self.handRectWidth / self.view.bounds.size.width;
     handPercent = 1.0 - handPercent;
     float scale = handPercent * 3.0;
+
     return 2.0 + scale;
 }
 
