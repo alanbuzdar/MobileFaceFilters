@@ -311,8 +311,8 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     if(_centroid.x < 50 || _centroid.x > image.cols-50 || _centroid.y < 50 || _centroid.y > image.rows-50)
         return;
     cv::cvtColor(image, image, CV_RGB2HSV);
-    self.handRect1 = cv::Rect(_centroid.x-50, _centroid.y-50, _rectsize, _rectsize);
-    self.handRect2 = cv::Rect(_centroid.x+50-_rectsize, _centroid.y-50, _rectsize, _rectsize);
+    self.handRect1 = cv::Rect(_centroid.x-50, _centroid.y, _rectsize, _rectsize);
+    self.handRect2 = cv::Rect(_centroid.x+50-_rectsize, _centroid.y, _rectsize, _rectsize);
     self.handRect3 = cv::Rect(_centroid.x, _centroid.y, _rectsize, _rectsize);
     self.handRect4 = cv::Rect(_centroid.x+50-_rectsize, _centroid.y+50-_rectsize, _rectsize, _rectsize);
     self.handRect5 = cv::Rect(_centroid.x-50, _centroid.y+50-_rectsize, _rectsize, _rectsize);
