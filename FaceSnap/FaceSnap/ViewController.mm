@@ -95,10 +95,16 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     
 }
 
+- (void)setScore:(long)score{
+    _score = score;
+//    [self.scoreLabel ];
+    self.scoreLabel.text = [NSString stringWithFormat:@"%ld", score];
+}
+
 - (void)handleTap:(UITapGestureRecognizer *)recognizer {
-    std::cout << "pushing back 0" << std::endl;
     _shootingY.push_back(0.0f);
-    std::cout << "size is now" << self.shootingY.size() << std::endl;
+    self.score = _score;
+
 }
 
 - (IBAction)captureHandImageButtonPressed:(id)sender {
@@ -263,7 +269,6 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
                     if(_shootingY[i] <= -50) {
                         _shootingY.erase(_shootingY.begin());
                         _score++;
-//                        [self.scoreLabel.text set:@"hi"]; //@"hello";//[NSString stringWithFormat:@"Score: %ld", _score];
                     }
                 }
                 

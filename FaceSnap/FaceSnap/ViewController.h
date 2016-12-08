@@ -19,7 +19,7 @@ using namespace cv;
 @interface ViewController : UIViewController<CvVideoCameraDelegate, GLKViewDelegate>
 
 
-@property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
+@property (strong, nonatomic) IBOutlet UILabel *scoreLabel;
 @property (weak, nonatomic) IBOutlet UIButton *captureHandImageButton;
 @property (nonatomic, retain) CvVideoCamera* videoCamera;
 @property (nonatomic) CascadeClassifier classifier;
