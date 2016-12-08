@@ -156,7 +156,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     float x_amount = 0.25;
     float y_amount = x_amount * self.view.bounds.size.width / self.view.bounds.size.height;
     float length = 0.25;
-    std::cout << y_amount << std::endl;
+
     for (int i = 0; i < 720; i += 2) {
         vertices[i]   = (GLfloat)(cos(DEGREES_TO_RADIANS(-i/2)) * x_amount);
         vertices[i+1] = (GLfloat)(sin(DEGREES_TO_RADIANS(-i/2)) * y_amount);
@@ -427,8 +427,6 @@ float dist(cv::Point p1, cv::Point p2){
 //            _centroid = cv::Point(newHandBoundingRect.x+newHandBoundingRect.width/2, newHandBoundingRect.y+newHandBoundingRect.height/2+newHandBoundingRect.height/10);
             convexityDefects(contours[index], hullI[index], defects);
             for(int i=0; i < defects.size(); i++){
-                std::cout << "i is " << i << std::endl;
-                std::cout << "size is " << defects.size() << std::endl;
                 Vec4i current = defects[i];
                 cv::Point point1 = contours[index][current[0]];
                 cv::Point point2 = contours[index][current[2]];
