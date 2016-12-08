@@ -48,6 +48,7 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.objectType = 0;
     self.shouldSpin = 0;
     self.spin = 0;
+    self.score = 0;
 
     
     [self initializeOpenGL];
@@ -261,6 +262,8 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
                     glTranslatef(0, -_shootingY[i], 0);
                     if(_shootingY[i] <= -50) {
                         _shootingY.erase(_shootingY.begin());
+                        _score++;
+//                        [self.scoreLabel.text set:@"hi"]; //@"hello";//[NSString stringWithFormat:@"Score: %ld", _score];
                     }
                 }
                 
@@ -554,11 +557,10 @@ float dist(cv::Point p1, cv::Point p2){
         }
         else {
             glClear(GL_COLOR_BUFFER_BIT);
-            _shootingY.clear();
             [self.context presentRenderbuffer:GL_RENDERBUFFER];
         }
         
-        cv::rectangle(image, self.handRect1, Scalar(0,0,255,1));
+        cv::rectangle(image, self.handRect1, Scalar(0,0,255,1));                       
         cv::rectangle(image, self.handRect2, Scalar(0,0,255,1));
         cv::rectangle(image, self.handRect3, Scalar(0,0,255,1));
         cv::rectangle(image, self.handRect4, Scalar(0,0,255,1));
