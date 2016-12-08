@@ -252,9 +252,10 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 
 -(float)getZCoordinate
 {
-    float z = 2.0;//max(1.0, 1.0);
-    
-    return z;
+    float handPercent = self.handRectWidth / self.view.bounds.size.width;
+    handPercent = 1.0 - handPercent;
+    float scale = handPercent * 3.0;
+    return 2.0 + scale;
 }
 
 -(void)drawOpenGLObjects
@@ -453,6 +454,7 @@ float dist(cv::Point p1, cv::Point p2){
             }
             
             cv::rectangle(image, newHandBoundingRect, Scalar(0,255,0, 1));
+            self.handRectWidth = newHandBoundingRect.width;
         }
 
         
