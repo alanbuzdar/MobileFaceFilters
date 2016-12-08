@@ -13,7 +13,6 @@
 #include<cstdio>
 #include<iostream>
 
-#define SCALE_FACTOR 2
 #define DEGREES_TO_RADIANS(x) (3.14159265358979323846 * x / 180.0)
 
 @interface ViewController ()
@@ -50,28 +49,28 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     cv::Rect rec1, rec2, rec3, rec4, rec5;
     rec1.x = 230;
     rec1.y = 500;
-    rec1.width = 50/SCALE_FACTOR;
-    rec1.height = 50/SCALE_FACTOR;
+    rec1.width = 50;
+    rec1.height = 50;
     
     rec2.x = 360;
     rec2.y = 500;
-    rec2.width = 50/SCALE_FACTOR;
-    rec2.height = 50/SCALE_FACTOR;
+    rec2.width = 50;
+    rec2.height = 50;
     
     rec3.x = 250;
     rec3.y = 700;
-    rec3.width = 50/SCALE_FACTOR;
-    rec3.height = 50/SCALE_FACTOR;
+    rec3.width = 50;
+    rec3.height = 50;
     
     rec4.x = 340;
     rec4.y = 700;
-    rec4.width = 50/SCALE_FACTOR;
-    rec4.height = 50/SCALE_FACTOR;
+    rec4.width = 50;
+    rec4.height = 50;
     
     rec5.x = 295;
     rec5.y = 600;
-    rec5.width = 50/SCALE_FACTOR;
-    rec5.height = 50/SCALE_FACTOR;
+    rec5.width = 50;
+    rec5.height = 50;
     
     self.handRect1 = rec1;
     self.handRect2 = rec2;
@@ -310,16 +309,14 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 
 
 - (void)updateHandColor: (Mat) image {
-    
-    float amount = 50/SCALE_FACTOR;
-    if(_centroid.x < amount || _centroid.x > image.cols-amount || _centroid.y < amount || _centroid.y > image.rows-amount)
+    if(_centroid.x < 50 || _centroid.x > image.cols-50 || _centroid.y < 50 || _centroid.y > image.rows-50)
         return;
     cv::cvtColor(image, image, CV_RGB2HSV);
-    self.handRect1 = cv::Rect(_centroid.x-amount, _centroid.y-amount, _rectsize/SCALE_FACTOR, _rectsize/SCALE_FACTOR);
-    self.handRect2 = cv::Rect(_centroid.x+amount-_rectsize/SCALE_FACTOR, _centroid.y-amount, _rectsize/SCALE_FACTOR, _rectsize/SCALE_FACTOR);
-    self.handRect3 = cv::Rect(_centroid.x, _centroid.y, _rectsize/SCALE_FACTOR, _rectsize/SCALE_FACTOR);
-    self.handRect4 = cv::Rect(_centroid.x+amount-_rectsize/SCALE_FACTOR, _centroid.y+amount-_rectsize/SCALE_FACTOR, _rectsize/SCALE_FACTOR, _rectsize/SCALE_FACTOR);
-    self.handRect5 = cv::Rect(_centroid.x-amount, _centroid.y+amount-_rectsize/SCALE_FACTOR, _rectsize/SCALE_FACTOR, _rectsize/SCALE_FACTOR);
+    self.handRect1 = cv::Rect(_centroid.x-50, _centroid.y-50, _rectsize, _rectsize);
+    self.handRect2 = cv::Rect(_centroid.x+50-_rectsize, _centroid.y-50, _rectsize, _rectsize);
+    self.handRect3 = cv::Rect(_centroid.x, _centroid.y, _rectsize, _rectsize);
+    self.handRect4 = cv::Rect(_centroid.x+50-_rectsize, _centroid.y+50-_rectsize, _rectsize, _rectsize);
+    self.handRect5 = cv::Rect(_centroid.x-50, _centroid.y+50-_rectsize, _rectsize, _rectsize);
 
     self.hand1 = image(self.handRect1).clone();
     self.hand2 = image(self.handRect2).clone();
@@ -373,9 +370,6 @@ float dist(cv::Point p1, cv::Point p2){
             _frame = 1;
             [self updateHandColor:image];
         }
-        
-        resize(image, image, cv::Size(image.size().width/SCALE_FACTOR, image.size().height/SCALE_FACTOR));
-        
         cv::cvtColor(image, HSV, CV_RGB2HSV);
         cv::inRange(HSV, getOffsetColor(self.mean1, -h, -s, -v), getOffsetColor(self.mean1, h, s, v), thresh1);
         cv::inRange(HSV, getOffsetColor(self.mean2, -h, -s, -v), getOffsetColor(self.mean2, h, s, v), thresh2);
@@ -430,9 +424,11 @@ float dist(cv::Point p1, cv::Point p2){
             }
             
             
-            _centroid = cv::Point(newHandBoundingRect.x+newHandBoundingRect.width/2, newHandBoundingRect.y+newHandBoundingRect.height/2+newHandBoundingRect.height/10);
+//            _centroid = cv::Point(newHandBoundingRect.x+newHandBoundingRect.width/2, newHandBoundingRect.y+newHandBoundingRect.height/2+newHandBoundingRect.height/10);
             convexityDefects(contours[index], hullI[index], defects);
-            for(int i=0; i<defects.size()-1; i++){
+            for(int i=0; i < defects.size(); i++){
+                std::cout << "i is " << i << std::endl;
+                std::cout << "size is " << defects.size() << std::endl;
                 Vec4i current = defects[i];
                 cv::Point point1 = contours[index][current[0]];
                 cv::Point point2 = contours[index][current[2]];
@@ -448,37 +444,55 @@ float dist(cv::Point p1, cv::Point p2){
             }
             
             for(int j=0; j<fingers.size(); j++){
-                cv::circle(image, contours[index][fingers[j][0]], 50/SCALE_FACTOR, Scalar(0,0,255, 1));
+                cv::circle(image, contours[index][fingers[j][0]], 50, Scalar(0,0,255, 1));
             }
             
-            cv::Point center;
-            double dist, maxdist = -1;
             
-            for(int i = 0;i < image.cols;i+=20)
-            {
-                for(int j = 0;j < image.rows;j+=20)
+            if(_frame % 2 == 0){
+            
+                cv::Point center;
+                double dist, maxdist = -1;
+                std::vector<cv::Point> contours_copy = contours[index];
+                int factor = 3;
+                
+                
+                for(int i = 0; i < contours_copy.size(); i++) {
+                    contours_copy.at(i) /= factor;
+                }
+                
+                cv::Mat image_copy;
+                resize(image, image_copy, cv::Size(image.size().width/factor, image.size().height/factor));
+                
+                
+                for(int i = 0;i < image_copy.cols;i+=10)
                 {
-                    
-                    dist = pointPolygonTest(contours[index], cv::Point(i,j),true);
-                    if(dist > maxdist)
+                    for(int j = 0;j < image_copy.rows;j+=10)
                     {
-                        maxdist = dist;
-                        center = cv::Point(i,j);
+                        
+                        dist = pointPolygonTest(contours_copy, cv::Point(i,j),true);
+                        if(dist > maxdist)
+                        {
+                            maxdist = dist;
+                            center = cv::Point(i,j);
+                        }
                     }
+                }
+                cv::Point center_copy;
+        
+                center_copy.x = center.x*factor;
+                center_copy.y = center.y*factor;
+                _centroid = center_copy;
+                if(maxdist > 0) {
+                    cv::circle(image, center_copy, maxdist*factor, cv::Scalar(220,75,20),1,CV_AA);
                 }
             }
             
-            cv::circle(image, center, maxdist, cv::Scalar(220,75,20),1,CV_AA);
         }
 
         drawContours( image, hull, index, Scalar(255,0,0, 1), 1, 8, std::vector<Vec4i>(), 0, cv::Point() );
         drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
         
-
-        
-        
-        resize(image, image, cv::Size(image.size().width*SCALE_FACTOR, image.size().height*SCALE_FACTOR));
-        if(fingers.size() == 4){
+        if(fingers.size() >= 3){
             [self.glkView display];
         }
         else {
