@@ -252,7 +252,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 
 -(float)getZCoordinate
 {
-    float handPercent = self.handRectWidth / self.view.bounds.size.width;
+    float handPercent = self.handRectWidth / self.view.bounds.size.height;
     handPercent = 1.0 - handPercent;
     float scale = handPercent * 3.0;
     return 2.0 + scale;
@@ -413,7 +413,6 @@ float dist(cv::Point p1, cv::Point p2){
             Moments m = moments(hull[index]);
             _centroid = cv::Point(m.m10/m.m00, m.m01/m.m00);
             convexityDefects(contours[index], hullI[index], defects);
-            std::cout << defects.size() << std::endl;
             for(int i=0; i<defects.size()-1; i++){
                 Vec4i current = defects[i];
                 cv::Point point1 = contours[index][current[0]];
@@ -423,7 +422,6 @@ float dist(cv::Point p1, cv::Point p2){
                 float angle = vertexAngle( point1,  point2,  point3);
                 float d12 = dist(point1, point2);
                 float d23 = dist(point2, point3);
-                std::cout << angle << std::endl;
                 if(angle < 90 && d12 < 1280/3 && d23 < 1280/3 && d12 > 128 && d23 > 128){
                     //cv::line(image, contours[index][current[0]], contours[index][current[2]], Scalar(0,0,255, 1), 10);
                     //cv::line(image, contours[index][current[2]], contours[index][current[1]], Scalar(0,0,255, 1), 10);
