@@ -43,5 +43,6 @@ using namespace cv;
 @property std::vector<float> shootingY;
 @property clock_t prevTimeStamp;
 @property long score;
+@property bool hideOblong;
 @end
 
