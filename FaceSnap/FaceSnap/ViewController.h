@@ -18,11 +18,9 @@
 using namespace cv;
 @interface ViewController : UIViewController<CvVideoCameraDelegate, GLKViewDelegate>
 
-
 @property (strong, nonatomic) IBOutlet UILabel *scoreLabel;
 @property (weak, nonatomic) IBOutlet UIButton *captureHandImageButton;
 @property (nonatomic, retain) CvVideoCamera* videoCamera;
-@property (nonatomic) CascadeClassifier classifier;
 @property int display;
 @property cv::Rect handRect1, handRect2, handRect3, handRect4, handRect5;
 @property cv::Mat hand1, hand2, hand3, hand4, hand5;
@@ -37,7 +35,6 @@ using namespace cv;
 @property int rectsize;
 @property int handRectWidth;
 @property int colorCount;
-@property int objectType;
 @property int spin;
 @property int shouldSpin;
 @property std::vector<float> shootingY;

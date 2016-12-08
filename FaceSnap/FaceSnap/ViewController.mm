@@ -19,14 +19,9 @@
 @end
 
 @implementation ViewController
-NSString* const fileName = @"haarcascade_frontalface_default";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    // Do any additional setup after loading the view, typically from a nib.
-    NSString* filePath = [[NSBundle mainBundle] pathForResource:fileName ofType:@"xml"];
-    _classifier.load([filePath UTF8String]);
     
     UIImageView *imageView = (UIImageView*)[self.view viewWithTag:2];
     self.videoCamera = [[CvVideoCamera alloc] initWithParentView:imageView];
@@ -45,7 +40,6 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.frame = 0;
     self.colorCount = 0;
     self.prevTimeStamp = 0;
-    self.objectType = 0;
     self.shouldSpin = 0;
     self.spin = 0;
     self.score = 0;
@@ -97,7 +91,6 @@ NSString* const fileName = @"haarcascade_frontalface_default";
 
 - (void)setScore:(long)score{
     _score = score;
-//    [self.scoreLabel ];
     self.scoreLabel.textColor = [UIColor colorWithRed:1 green:.01 blue:.02 alpha:1.0];
     self.scoreLabel.text = [NSString stringWithFormat:@"Score: %ld", score];
 }
@@ -186,11 +179,11 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         
         upnormals[i/2*3] = 0;
         upnormals[i/2*3+1] = 0;
-        upnormals[i/2*3+2] = -1;//-cos(DEGREES_TO_RADIANS(_spin));
+        upnormals[i/2*3+2] = -1;
         
         downnormals[i/2*3] = 0;
         downnormals[i/2*3+1] = 0;
-        downnormals[i/2*3+2] = 1;//cos(DEGREES_TO_RADIANS(_spin));
+        downnormals[i/2*3+2] = 1;
     }
     
     GLfloat sides[361 * 2 * 3];
@@ -254,36 +247,30 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
        glRotatef(self.spin, 0, 0, 1);
     }
     
-
-    switch(self.objectType) {
-        case 0:
-            if(!_hideOblong) {
-               [self drawCylinder];
+    if(!_hideOblong) {
+       [self drawCylinder];
+    }
+    
+    if(_shootingY.size() != 0) {
+        if(self.shouldSpin) {
+            glRotatef(-self.spin, 0, 0, 1);
+        }
+        
+        for(int i = 0; i < _shootingY.size(); i++) {
+            _shootingY[i] -= 1;
+            glTranslatef(0, _shootingY[i], 0);
+            [self drawCylinder];
+            glTranslatef(0, -_shootingY[i], 0);
+            if(_shootingY[i] <= -50) {
+                _shootingY.erase(_shootingY.begin());
             }
-            
-            if(_shootingY.size() != 0) {
-                if(self.shouldSpin) {
-                    glRotatef(-self.spin, 0, 0, 1);
-                }
-                
-                for(int i = 0; i < _shootingY.size(); i++) {
-                    _shootingY[i] -= 1;
-                    glTranslatef(0, _shootingY[i], 0);
-                    [self drawCylinder];
-                    glTranslatef(0, -_shootingY[i], 0);
-                    if(_shootingY[i] <= -50) {
-                        _shootingY.erase(_shootingY.begin());
-                    }
-                }
-                
-            }
-        break;
-        case 1:
-            break;
-            
+        }
+        
     }
 }
-
+/*
+    Borrowed from professor Hollerer and modified for OpenGL ES for debugging
+*/
 - (void) drawAxes:(float) length
 {
     GLfloat vertice[] = {0,0,0,length,0,0};
@@ -334,7 +321,6 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     glEnable( GL_DEPTH_TEST );
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    //    glClearColor(1.0, 0.0, 1.0, 0.3);
     glDisable( GL_BLEND );
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -362,6 +348,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     GLfloat lightPos[] = {0, 1.0, -3, 1};
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
     
+    //uncomment this for debugging
 //    [self drawAxes:1.0];
     [self drawObject];
     glDisable(GL_LIGHTING);
@@ -419,7 +406,7 @@ float dist(cv::Point p1, cv::Point p2){
         [self captureHandColor :image];
     }
     if(!self.hand1.empty()) {
-        Mat grey, HSV, output, displayImage, thresholded, largestContour, thresh, temp;
+        Mat HSV, output, thresholded, thresh;
         Mat thresh1, thresh2, thresh3, thresh4, thresh5;
         Mat image_clone = image.clone();
         Mat sumThresh;
@@ -450,7 +437,7 @@ float dist(cv::Point p1, cv::Point p2){
         cv::erode(sumThresh, sumThresh, Mat());
         output = sumThresh.clone();
         
-//        find contours and hulls of each contour
+        //find contours and hulls of each contour
         cv::findContours( output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
 
         std::vector<std::vector<cv::Point>> hull( contours.size() );
@@ -465,7 +452,7 @@ float dist(cv::Point p1, cv::Point p2){
         for( int i = 0; i < contours.size(); i++ )
         {
             area=contourArea(contours[i],false);
-            if(area>max){
+            if(area>max) {
                 max=area;
                 index=i;
             }
@@ -482,12 +469,10 @@ float dist(cv::Point p1, cv::Point p2){
             int maxHeight = rectW*goldenRatio;
             if(rectH > maxHeight){
                 newHandBoundingRect = cv::Rect(handBoundingRect.tl().x, handBoundingRect.tl().y, rectW, maxHeight);
-            }else{
+            } else {
                 newHandBoundingRect = handBoundingRect;
             }
             
-            
-//            _centroid = cv::Point(newHandBoundingRect.x+newHandBoundingRect.width/2, newHandBoundingRect.y+newHandBoundingRect.height/2+newHandBoundingRect.height/10);
             convexityDefects(contours[index], hullI[index], defects);
             for(int i=0; i < defects.size(); i++){
                 Vec4i current = defects[i];
@@ -510,12 +495,10 @@ float dist(cv::Point p1, cv::Point p2){
             
             
             if(_frame % 2 == 0){
-            
                 cv::Point center;
                 double dist, maxdist = -1;
                 std::vector<cv::Point> contours_copy = contours[index];
                 int factor = 3;
-                
                 
                 for(int i = 0; i < contours_copy.size(); i++) {
                     contours_copy.at(i) /= factor;
@@ -561,7 +544,6 @@ float dist(cv::Point p1, cv::Point p2){
             self.colorCount = (self.colorCount + 1) % 3;
             self.prevTimeStamp = clock();
         } else if (fingers.size() <= 1 && (clock() - self.prevTimeStamp > 250*1e-3*CLOCKS_PER_SEC)) {
-//            self.objectType = (self.objectType + 1) % 2;
             self.shouldSpin = (self.shouldSpin + 1) % 2;
             self.prevTimeStamp = clock();
         }
@@ -611,7 +593,6 @@ float dist(cv::Point p1, cv::Point p2){
     
 }
 #endif
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
