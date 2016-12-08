@@ -51,13 +51,6 @@
                                     <action selector="captureHandImageButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="npj-5q-gtn"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7GN-4f-Etd">
-                                <rect key="frame" x="128" y="577" width="118" height="30"/>
-                                <state key="normal" title="Show Rectangles"/>
-                                <connections>
-                                    <action selector="showRectanglesButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xeM-4N-0eo"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -67,13 +60,10 @@
                             <constraint firstItem="IoF-xP-Prs" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="GSh-Pw-PMz"/>
                             <constraint firstItem="Y50-xQ-Lkn" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="QXY-1X-BVa"/>
                             <constraint firstItem="Y50-xQ-Lkn" firstAttribute="top" secondItem="KAJ-k8-8xj" secondAttribute="bottom" id="RfX-hF-exv"/>
-                            <constraint firstItem="7GN-4f-Etd" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="TaI-ML-aa7"/>
                             <constraint firstItem="KAJ-k8-8xj" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="TrL-8M-YC1"/>
-                            <constraint firstItem="KAJ-k8-8xj" firstAttribute="top" secondItem="7GN-4f-Etd" secondAttribute="bottom" id="aSQ-Lp-xtP"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="Y50-xQ-Lkn" secondAttribute="bottom" id="cOJ-n1-wfH"/>
                             <constraint firstAttribute="trailing" secondItem="IoF-xP-Prs" secondAttribute="trailing" id="kpz-8p-UP4"/>
                             <constraint firstItem="IoF-xP-Prs" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="qO2-pH-l46"/>
-                            <constraint firstItem="7GN-4f-Etd" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="uZP-bG-Nk5"/>
                         </constraints>
                     </view>
                     <connections>

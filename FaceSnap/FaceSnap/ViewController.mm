@@ -38,39 +38,41 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.videoCamera.grayscaleMode = NO;
     self.videoCamera.rotateVideo = YES;
     self.display = 0;
-    self.showRects = true;
     self.captureSkinColor = false;
     self.glkView.delegate = self;
     self.effect = [GLKBaseEffect new];
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
     self.frame = 0;
+    self.colorCount = 0;
+    self.prevTimeStamp = 0;
+    self.objectType = 0;
     [self initializeOpenGL];
     
     cv::Rect rec1, rec2, rec3, rec4, rec5;
-    rec1.x = 230;
+    rec1.x = 250;
     rec1.y = 500;
-    rec1.width = 50;
-    rec1.height = 50;
+    rec1.width = 30;
+    rec1.height = 30;
     
-    rec2.x = 360;
+    rec2.x = 340;
     rec2.y = 500;
-    rec2.width = 50;
-    rec2.height = 50;
+    rec2.width = 30;
+    rec2.height = 30;
     
     rec3.x = 250;
-    rec3.y = 700;
-    rec3.width = 50;
-    rec3.height = 50;
+    rec3.y = 600;
+    rec3.width = 30;
+    rec3.height = 30;
     
-    rec4.x = 340;
-    rec4.y = 700;
-    rec4.width = 50;
-    rec4.height = 50;
+    rec4.x = 320;
+    rec4.y = 600;
+    rec4.width = 30;
+    rec4.height = 30;
     
     rec5.x = 295;
-    rec5.y = 600;
-    rec5.width = 50;
-    rec5.height = 50;
+    rec5.y = 550;
+    rec5.width = 30;
+    rec5.height = 30;
     
     self.handRect1 = rec1;
     self.handRect2 = rec2;
@@ -87,12 +89,8 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.captureSkinColor = true;
 }
 
-- (IBAction)showRectanglesButtonPressed:(id)sender {
-    self.showRects = !self.showRects;
-}
-
 - (IBAction)changeViewButtonPressed:(id)sender {
-    self.display = (self.display + 1) % 6;
+    self.display = (self.display + 1) % 7;
 }
 
 - (void)glkView:(GLKView *)view
@@ -144,16 +142,15 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     self.mean5 = cv::mean(self.hand5);
     
     self.captureSkinColor = false;
-    self.showRects = false;
 }
 
 -(void)drawCylinder {
     glEnable(GL_LIGHTING);
-    glColor4f(1, 1, 1, 1);
+
     GLfloat vertices[720];
     GLfloat upnormals[360*3];
     GLfloat downnormals[360*3];
-    float x_amount = 0.25;
+    float x_amount = 0.70;
     float y_amount = x_amount * self.view.bounds.size.width / self.view.bounds.size.height;
     float length = 0.25;
 
@@ -169,7 +166,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
         downnormals[i/2*3+1] = 0;
         downnormals[i/2*3+2] = 1;
     }
-    glColor4f(1, 1, 0, 1);
+//    glColor4f(1, 1, 0, 1);
     
     GLfloat sides[361 * 2 * 3];
     GLfloat normals[361 * 2 * 3];
@@ -216,7 +213,26 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 
 -(void)drawObject
 {
-    [self drawCylinder];
+    cv::Scalar color;
+    switch(self.colorCount) {
+        case 0:
+            glColor4f(1, 1, 0, 1);
+            break;
+        case 1:
+            glColor4f(1, 0, 1, 1);
+            break;
+        case 2:
+            glColor4f(0, 1, 1, 1);
+            break;
+    }
+    switch(self.objectType) {
+        case 0:
+            [self drawCylinder];
+        break;
+        case 1:
+            break;
+            
+    }
 }
 
 - (void) drawAxes:(float) length
@@ -252,10 +268,10 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 
 -(float)getZCoordinate
 {
-    float handPercent = 0.5 * self.handRectWidth / self.view.bounds.size.width;
-    handPercent = 1.0 - handPercent;
-    float scale = handPercent * 3.0;
-
+    float handPercent = self.handRectWidth / (self.view.bounds.size.width * .05) - 1;
+    
+    handPercent = 10.0 - handPercent;
+    float scale = handPercent;
     return 2.0 + scale;
 }
 
@@ -297,9 +313,7 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     
     glRotatef(-30, 1, 0, 0);
     
-    
-    
-    [self drawAxes:1.0];
+//    [self drawAxes:1.0];
     [self drawObject];
     glDisable(GL_LIGHTING);
     
@@ -359,6 +373,7 @@ float dist(cv::Point p1, cv::Point p2){
     if(!self.hand1.empty()) {
         Mat grey, HSV, output, displayImage, thresholded, largestContour, thresh, temp;
         Mat thresh1, thresh2, thresh3, thresh4, thresh5;
+        Mat image_clone = image.clone();
         Mat sumThresh;
         double area, max = 0;
         int index = 0, h = 10, s = 25, v = 50;
@@ -442,7 +457,7 @@ float dist(cv::Point p1, cv::Point p2){
             }
             
             for(int j=0; j<fingers.size(); j++){
-                cv::circle(image, contours[index][fingers[j][0]], 50, Scalar(0,0,255, 1));
+                cv::circle(image, contours[index][fingers[j][0]], 50, Scalar(0,0,255, 1), -1);
             }
             
             
@@ -481,7 +496,8 @@ float dist(cv::Point p1, cv::Point p2){
                 center_copy.y = center.y*factor;
                 _centroid = center_copy;
                 if(maxdist > 0) {
-                    cv::circle(image, center_copy, maxdist*factor, cv::Scalar(220,75,20),1,CV_AA);
+                    self.handRectWidth = maxdist*factor;
+                    cv::circle(image, center_copy, self.handRectWidth, cv::Scalar(220,75,20),1,CV_AA);
                 }
             }
             
@@ -492,42 +508,57 @@ float dist(cv::Point p1, cv::Point p2){
         
         if(fingers.size() >= 3){
             [self.glkView display];
+        } else if (fingers.size() == 2 && (clock() - self.prevTimeStamp > 250*1e-3*CLOCKS_PER_SEC)) {
+            self.colorCount = (self.colorCount + 1) % 3;
+            self.prevTimeStamp = clock();
+        } else if (fingers.size() <= 1 && (clock() - self.prevTimeStamp > 250*1e-3*CLOCKS_PER_SEC)) {
+            self.objectType = (self.objectType + 1) % 2;
+            self.prevTimeStamp = clock();
         }
         else {
             glClear(GL_COLOR_BUFFER_BIT);
             [self.context presentRenderbuffer:GL_RENDERBUFFER];
         }
         
+        cv::rectangle(image, self.handRect1, Scalar(0,0,255,1));
+        cv::rectangle(image, self.handRect2, Scalar(0,0,255,1));
+        cv::rectangle(image, self.handRect3, Scalar(0,0,255,1));
+        cv::rectangle(image, self.handRect4, Scalar(0,0,255,1));
+        cv::rectangle(image, self.handRect5, Scalar(0,0,255,1));
+        
         switch(self.display) {
             case 0:
-                cv::cvtColor(image, image, CV_BGR2RGB);
+                cv::cvtColor(image_clone, image, CV_BGR2RGB);
                 break;
             case 1:
-                image = sumThresh.clone();
+                cv::cvtColor(image, image, CV_BGR2RGB);
                 break;
             case 2:
-                image = thresh1.clone();
+                image = sumThresh.clone();
                 break;
             case 3:
-                image = thresh2.clone();
+                image = thresh1.clone();
                 break;
             case 4:
-                image = thresh3.clone();
+                image = thresh2.clone();
                 break;
             case 5:
+                image = thresh3.clone();
+                break;
+            case 6:
                 image = thresh4.clone();
                 break;
             default:
                 image = thresh5.clone();
         }
-    }
-    if(self.showRects) {
+    } else {
         cv::rectangle(image, self.handRect1, Scalar(0,0,255,1));
         cv::rectangle(image, self.handRect2, Scalar(0,0,255,1));
         cv::rectangle(image, self.handRect3, Scalar(0,0,255,1));
         cv::rectangle(image, self.handRect4, Scalar(0,0,255,1));
         cv::rectangle(image, self.handRect5, Scalar(0,0,255,1));
     }
+    
 }
 #endif
 

@@ -26,7 +26,7 @@ using namespace cv;
 @property cv::Rect handRect1, handRect2, handRect3, handRect4, handRect5;
 @property cv::Mat hand1, hand2, hand3, hand4, hand5;
 @property cv::Scalar mean1, mean2, mean3, mean4, mean5;
-@property bool captureSkinColor, showRects;
+@property bool captureSkinColor;
 @property EAGLContext* context;
 @property (weak, nonatomic) IBOutlet GLKView *glkView;
 @property GLKBaseEffect* effect;
@@ -35,5 +35,8 @@ using namespace cv;
 @property NSInteger frame;
 @property int rectsize;
 @property int handRectWidth;
+@property int colorCount;
+@property int objectType;
+@property clock_t prevTimeStamp;
 @end
 
