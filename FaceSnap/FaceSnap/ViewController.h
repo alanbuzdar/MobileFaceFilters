@@ -19,6 +19,7 @@ using namespace cv;
 @interface ViewController : UIViewController<CvVideoCameraDelegate, GLKViewDelegate>
 
 
+@property (strong, nonatomic) IBOutlet UILabel *scoreLabel;
 @property (weak, nonatomic) IBOutlet UIButton *captureHandImageButton;
 @property (nonatomic, retain) CvVideoCamera* videoCamera;
 @property (nonatomic) CascadeClassifier classifier;
@@ -41,5 +42,7 @@ using namespace cv;
 @property int shouldSpin;
 @property std::vector<float> shootingY;
 @property clock_t prevTimeStamp;
+@property long score;
+@property bool hideOblong;
 @end
 

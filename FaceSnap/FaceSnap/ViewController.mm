@@ -48,7 +48,8 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     self.objectType = 0;
     self.shouldSpin = 0;
     self.spin = 0;
-
+    self.score = 0;
+    self.hideOblong = false;
     
     [self initializeOpenGL];
     
@@ -94,10 +95,18 @@ NSString* const fileName = @"haarcascade_frontalface_default";
     
 }
 
+- (void)setScore:(long)score{
+    _score = score;
+//    [self.scoreLabel ];
+    self.scoreLabel.textColor = [UIColor colorWithRed:1 green:.01 blue:.02 alpha:1.0];
+    self.scoreLabel.text = [NSString stringWithFormat:@"Score: %ld", score];
+}
+
 - (void)handleTap:(UITapGestureRecognizer *)recognizer {
-    std::cout << "pushing back 0" << std::endl;
-    _shootingY.push_back(0.0f);
-    std::cout << "size is now" << self.shootingY.size() << std::endl;
+    if(!self.hideOblong) {
+        _shootingY.push_back(0.0f);
+        self.score++;
+    }
 }
 
 - (IBAction)captureHandImageButtonPressed:(id)sender {
@@ -248,7 +257,10 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
 
     switch(self.objectType) {
         case 0:
-            [self drawCylinder];
+            if(!_hideOblong) {
+               [self drawCylinder];
+            }
+            
             if(_shootingY.size() != 0) {
                 if(self.shouldSpin) {
                     glRotatef(-self.spin, 0, 0, 1);
@@ -543,6 +555,7 @@ float dist(cv::Point p1, cv::Point p2){
         drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
         
         if(fingers.size() >= 3){
+            self.hideOblong = false;
             [self.glkView display];
         } else if (fingers.size() == 2 && (clock() - self.prevTimeStamp > 250*1e-3*CLOCKS_PER_SEC)) {
             self.colorCount = (self.colorCount + 1) % 3;
@@ -553,12 +566,11 @@ float dist(cv::Point p1, cv::Point p2){
             self.prevTimeStamp = clock();
         }
         else {
-            glClear(GL_COLOR_BUFFER_BIT);
-            _shootingY.clear();
-            [self.context presentRenderbuffer:GL_RENDERBUFFER];
+            self.hideOblong = true;
+            [self.glkView display];
         }
         
-        cv::rectangle(image, self.handRect1, Scalar(0,0,255,1));
+        cv::rectangle(image, self.handRect1, Scalar(0,0,255,1));                       
         cv::rectangle(image, self.handRect2, Scalar(0,0,255,1));
         cv::rectangle(image, self.handRect3, Scalar(0,0,255,1));
         cv::rectangle(image, self.handRect4, Scalar(0,0,255,1));
