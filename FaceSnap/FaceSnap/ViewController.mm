@@ -409,8 +409,20 @@ float dist(cv::Point p1, cv::Point p2){
         std::vector<Vec4i> defects;
         std::vector<Vec4i> fingers;
         if(hull.size() > index && hull[index].size() > 2 && contours[index].size() > 2){
-            Moments m = moments(hull[index]);
-            _centroid = cv::Point(m.m10/m.m00, m.m01/m.m00);
+            cv::Rect handBoundingRect = boundingRect(contours[index]);
+            cv::Rect newHandBoundingRect;
+            int rectW = handBoundingRect.width;
+            int rectH = handBoundingRect.height;
+            float goldenRatio = 1.1;// h/w
+            int maxHeight = rectW*goldenRatio;
+            if(rectH > maxHeight){
+                newHandBoundingRect = cv::Rect(handBoundingRect.tl().x, handBoundingRect.tl().y, rectW, maxHeight);
+            }else{
+                newHandBoundingRect = handBoundingRect;
+            }
+            
+            
+            _centroid = cv::Point(newHandBoundingRect.x+newHandBoundingRect.width/2, newHandBoundingRect.y+newHandBoundingRect.height/2);
             convexityDefects(contours[index], hullI[index], defects);
             std::cout << defects.size() << std::endl;
             for(int i=0; i<defects.size()-1; i++){
@@ -422,10 +434,7 @@ float dist(cv::Point p1, cv::Point p2){
                 float angle = vertexAngle( point1,  point2,  point3);
                 float d12 = dist(point1, point2);
                 float d23 = dist(point2, point3);
-                std::cout << angle << std::endl;
                 if(angle < 90 && d12 < 1280/3 && d23 < 1280/3 && d12 > 128 && d23 > 128){
-                    //cv::line(image, contours[index][current[0]], contours[index][current[2]], Scalar(0,0,255, 1), 10);
-                    //cv::line(image, contours[index][current[2]], contours[index][current[1]], Scalar(0,0,255, 1), 10);
                     fingers.push_back(current);
                 }
 
@@ -439,28 +448,14 @@ float dist(cv::Point p1, cv::Point p2){
         drawContours( image, hull, index, Scalar(255,0,0, 1), 1, 8, std::vector<Vec4i>(), 0, cv::Point() );
         drawContours( image, contours, index, Scalar(255,255,0, 1), 2, 8, hierarchy, 0, cv::Point(0,0) );
         
-        if(contours.size() > index) {
-            cv::Rect handBoundingRect = boundingRect(contours[index]);
-            cv::Rect newHandBoundingRect;
-            int rectW = handBoundingRect.width;
-            int rectH = handBoundingRect.height;
-            float goldenRatio = 1.3333;// h/w
-            int maxHeight = rectW*goldenRatio;
-            if(rectH > maxHeight){
-                newHandBoundingRect = cv::Rect(handBoundingRect.tl().x, handBoundingRect.tl().y, rectW, maxHeight);
-            }else{
-                newHandBoundingRect = handBoundingRect;
-            }
-            
-            cv::rectangle(image, newHandBoundingRect, Scalar(0,255,0, 1));
+        if(fingers.size() == 4){
+            [self.glkView display];
         }
-
-        
-        
-        
-        
-        [self.glkView display];
-
+        else {
+            glClear(GL_COLOR_BUFFER_BIT);
+            [self.context presentRenderbuffer:GL_RENDERBUFFER];
+           // glClearColor(0, 0, 0);
+        }
         //
 
         //
