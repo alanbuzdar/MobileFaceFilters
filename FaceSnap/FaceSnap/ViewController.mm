@@ -311,8 +311,8 @@ cv::Scalar getOffsetColor(cv::Scalar m, int r, int g, int b) {
     if(_centroid.x < 50 || _centroid.x > image.cols-50 || _centroid.y < 50 || _centroid.y > image.rows-50)
         return;
     cv::cvtColor(image, image, CV_RGB2HSV);
-    self.handRect1 = cv::Rect(_centroid.x-50, _centroid.y, _rectsize, _rectsize);
-    self.handRect2 = cv::Rect(_centroid.x+50-_rectsize, _centroid.y, _rectsize, _rectsize);
+    self.handRect1 = cv::Rect(_centroid.x-50, _centroid.y-50, _rectsize, _rectsize);
+    self.handRect2 = cv::Rect(_centroid.x+50-_rectsize, _centroid.y-50, _rectsize, _rectsize);
     self.handRect3 = cv::Rect(_centroid.x, _centroid.y, _rectsize, _rectsize);
     self.handRect4 = cv::Rect(_centroid.x+50-_rectsize, _centroid.y+50-_rectsize, _rectsize, _rectsize);
     self.handRect5 = cv::Rect(_centroid.x-50, _centroid.y+50-_rectsize, _rectsize, _rectsize);
@@ -422,9 +422,8 @@ float dist(cv::Point p1, cv::Point p2){
                 newHandBoundingRect = handBoundingRect;
             }
             
-            self.handRectWidth = newHandBoundingRect.width;
-
-            _centroid = cv::Point(newHandBoundingRect.x+newHandBoundingRect.width/2, newHandBoundingRect.y+newHandBoundingRect.height/2);
+            
+            _centroid = cv::Point(newHandBoundingRect.x+newHandBoundingRect.width/2, newHandBoundingRect.y+newHandBoundingRect.height/2+newHandBoundingRect.height/10);
             convexityDefects(contours[index], hullI[index], defects);
             for(int i=0; i<defects.size()-1; i++){
                 Vec4i current = defects[i];
