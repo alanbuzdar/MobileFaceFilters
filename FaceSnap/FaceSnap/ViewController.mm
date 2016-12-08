@@ -98,7 +98,8 @@ NSString* const fileName = @"haarcascade_frontalface_default";
 - (void)setScore:(long)score{
     _score = score;
 //    [self.scoreLabel ];
-    self.scoreLabel.text = [NSString stringWithFormat:@"%ld", score];
+    self.scoreLabel.textColor = [UIColor colorWithRed:1 green:.01 blue:.02 alpha:1.0];
+    self.scoreLabel.text = [NSString stringWithFormat:@"Score: %ld", score];
 }
 
 - (void)handleTap:(UITapGestureRecognizer *)recognizer {
