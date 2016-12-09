@@ -448,7 +448,7 @@ float dist(cv::Point p1, cv::Point p2){
             convexHull( Mat(contours[i]), hullI[i], false );
         }
         
-        //grab the largest contour and use that index for hull/contour displaying
+        //grab the largest contour and use that index for hull/contour  ing
         for( int i = 0; i < contours.size(); i++ )
         {
             area=contourArea(contours[i],false);
